@@ -8,6 +8,8 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "axios": "^0.27.2",
+    "v-calendar": "^3.0.0-alpha.8",
     "vue": "^3.2.36",
     "vue-router": "^4.0.15"
   },
