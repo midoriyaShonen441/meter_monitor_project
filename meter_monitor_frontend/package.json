@@ -11,6 +11,7 @@
     "axios": "^0.27.2",
     "v-calendar": "^3.0.0-alpha.8",
     "vue": "^3.2.36",
+    "vue-cookies": "^1.8.1",
     "vue-router": "^4.0.15"
   },
   "devDependencies": {

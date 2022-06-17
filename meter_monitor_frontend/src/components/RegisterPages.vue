@@ -3,7 +3,7 @@ export default {
     data(){
         return{
             // debug login // 
-            debugUsername: "admin",
+            debugUsername: "admin@admin",
             debugPassword: "12345",
             isUsername: "",
             isPassword: "",
@@ -16,7 +16,7 @@ export default {
                 this.isError = ""
                 this.$router.push("/verify")
             }else{
-                this.isError = "username or password invalid"
+                this.isError = "Invalid username or password."
             }
         }
     },
@@ -32,10 +32,10 @@ export default {
             <div class="setting-container">
 
                 <div class="username-container">
-                    <input class="input-username-container" placeholder="username" v-model="isUsername" />
+                    <input class="input-username-container" placeholder="username" v-model="isUsername" type="email" />
                 </div>
                 <div class="password-container">
-                    <input class="input-password-container" placeholder="password" v-model="isPassword" />
+                    <input class="input-password-container" placeholder="password" v-model="isPassword" type="password" />
                 </div>
                 <div class="Error-container" style="text-align: center; color: red;" v-if="isError !== ''">
                     <p>{{this.isError}}</p>

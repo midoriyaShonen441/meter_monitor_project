@@ -1,6 +1,7 @@
 <script>
 import 'v-calendar/dist/style.css';
 
+
 export default {
     data(){
         return{
@@ -59,7 +60,6 @@ export default {
     text-align: center;
     background-color: #EAEAEA33;
 }
-
 .set-input-date{
     width: 75%;
     height: 30px;
@@ -69,7 +69,4 @@ export default {
     box-shadow: rgba(112, 112, 168, 0.25) 0px 30px 60px -12px inset, rgba(60, 60, 60, 0.3) 0px 18px 36px -18px inset;
 }
 
-.collection-container{
- 
-}
 </style>
