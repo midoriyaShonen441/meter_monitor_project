@@ -13,12 +13,14 @@ export default {
     methods:{
         haddleLogin(){
             if((this.isUsername === this.debugUsername && this.isPassword === this.debugPassword)){
-                this.isError = ""
-                this.$router.push("/verify")
+                this.isError = "";
+                this.$cookies.set('userDam',this.debugUsername); 
+                this.$router.push("/verify");
             }else{
-                this.isError = "Invalid username or password."
+                this.isError = "Invalid username or password.";
             }
-        }
+        },
+       
     },
     mounted(){
 

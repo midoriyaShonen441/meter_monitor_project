@@ -7,7 +7,8 @@ export default {
         return{
             date: new Date(),
             typeDate:"",
-            isDate:""
+            isDate:"",
+            userId:""
         }
     },
     methods:{
@@ -20,7 +21,22 @@ export default {
         haddleTypeDate(){
             const trimDate = this.typeDate.trim();
             console.log(trimDate);
+        },
+        funcGetCookies(){
+            const userIn = this.$cookies.get("userDam");
+            this.userId = userIn
+            if(!(userIn)){
+                this.$cookies.remove("userDam")
+                this.$router.push("/")
+            }
+        },
+        haddleLogout(){
+            this.$cookies.remove("userDam");
+            this.$router.push("/");
         }
+    },
+    mounted(){
+        this.funcGetCookies();
     },
     updated(){
         this.setConvert();
@@ -31,6 +47,12 @@ export default {
 <template>
     <div class="verify-container">
         <div class="filter-container">
+            <div class="userprofile-info">
+                <h4>user: {{userId}}</h4>
+                <div>
+                    <button class="btn-logout" @click="haddleLogout">Logout</button>
+                </div>
+            </div>
             <div class="search-date-input">
                 <input class="set-input-date" placeholder="01/01/1990"  v-model="typeDate"/>
                 <button><i class="fa fa-search"></i></button>
@@ -48,7 +70,7 @@ export default {
 <style scoped>
 .verify-container{
     display: grid;
-    grid-template-columns: 1fr 5fr;
+    grid-template-columns: 1.5fr 5fr;
     height: 680px;
     margin-top: 10.9%; 
 }
@@ -69,4 +91,28 @@ export default {
     box-shadow: rgba(112, 112, 168, 0.25) 0px 30px 60px -12px inset, rgba(60, 60, 60, 0.3) 0px 18px 36px -18px inset;
 }
 
+.btn-logout{
+    background-color: rgb(220, 80, 80);
+    color:white;
+    border-radius: 5px;
+    font-weight: bold;
+    height: 30px;
+    border: none;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.userprofile-info{
+    display: flex;
+    justify-content:center;
+    margin-bottom: 10px;
+}
+
+.userprofile-info > h4{
+    margin-right: 10px;
+}
+
+ 
+.userprofile-info > div > button{
+    margin-top: 10px;   
+}
 </style>
