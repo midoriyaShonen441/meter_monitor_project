@@ -20,10 +20,16 @@ export default {
                 this.isError = "Invalid username or password.";
             }
         },
+        funcCheckLogin(){
+            if(this.$cookies.get("userDam")){
+                console.log("ss")
+                this.$router.push("/verify");
+            }
+        }
        
     },
     mounted(){
-
+        this.funcCheckLogin();
     }
 }
 </script>
