@@ -13,6 +13,7 @@ const jwt = require('jsonwebtoken');
 // add schema // 
 const UserProfile = require("./model/userprofile");
 const MeterImage = require("./model/meterImage");
+const upload = require("./modules/uploadMiddleware");
 
 const app = express()
 app.use(express.json());
@@ -122,8 +123,11 @@ app.post("/haddlelogin", async (req, res) => {
 })
 
 // writing image to db
-app.post("/image/upload", async(req, res) => {
-    const image = req.body;
+app.get("/", async(req, res) => {
+    res.send("OK")
+})
+app.post("/image/upload", upload.single("file"), async(req, res) => {
+    res.send(req.file)
 })
 
 

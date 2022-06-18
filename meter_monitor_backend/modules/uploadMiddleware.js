@@ -1,7 +1,7 @@
 const multer = require('multer');
 
 const imageFilter = (req, file, cb) => {
-    if (file.mimetype.startWith("image")) {
+    if (file.mimetype.startsWith("image")) {
         cb(null, true);
     }
     else {
@@ -9,14 +9,20 @@ const imageFilter = (req, file, cb) => {
     }
 }
 
-let storage = multer.diskStorage({
-    destination:  (req, file, cb)
+const storage = multer.diskStorage({
+    destination:  (req, file, cb) => {
+        // cb(null, __basedir + "/resources/static/assets/uploads/");
+        cb(null, "uploads/");
+    },
+    filename: (req, file, cb) => {
+        // cb(null, `${Date.now()}-image-${file.originalname}`);
+        cb(null, `${Date.now()}.jpg`);
+    }
 })
 
-// const upload = multer({
-//   limits: {
-//     fileSize: 4 * 1024 * 1024,
-//   }
-// });
+const upload = multer({
+    storage: storage,
+    fileFilter: imageFilter
+});
 
 module.exports = upload
