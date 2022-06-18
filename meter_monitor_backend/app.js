@@ -2,7 +2,7 @@
 require("dotenv").config();
 require("./connection/connection").connect(); // now connection to local database mongodb // 
 
-
+// lib // 
 const express = require("express");
 const cors = require("cors");
 const imageToBase64 = require("image-to-base64");
@@ -13,7 +13,11 @@ const jwt = require('jsonwebtoken');
 // add schema // 
 const UserProfile = require("./model/userprofile");
 const MeterImage = require("./model/meterImage");
+
+// add modules // 
 const upload = require("./modules/uploadMiddleware");
+const auth = require("./middleware/auth");
+
 
 const app = express()
 app.use(express.json());
@@ -21,6 +25,16 @@ app.use(cors());
 
 // setting encrypted password // 
 const encryptedRounds = 10;
+
+
+// checking login  // 
+app.get("/checkingauth", auth, async (req, res) =>{
+    const replyText = {
+        isError: false,
+        text: "ok"
+    }
+    res.send(replyText);
+})
 
 // user register // 
 app.post("/haddleregister", async (req, res) => {

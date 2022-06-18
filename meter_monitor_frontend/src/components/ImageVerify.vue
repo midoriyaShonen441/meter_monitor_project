@@ -1,6 +1,6 @@
 <script>
 import 'v-calendar/dist/style.css';
-
+import axios from 'axios';
 
 export default {
     data(){
@@ -12,33 +12,65 @@ export default {
         }
     },
     methods:{
+
         setConvert(){
             const day = this.date.getDate();
             const month = this.date.getMonth()+1;
             const year = this.date.getFullYear();
             this.isDate = `${day}/${month}/${year}`;
         },
+
         haddleTypeDate(){
             const trimDate = this.typeDate.trim();
             console.log(trimDate);
         },
-        funcGetCookies(){
-            const userIn = this.$cookies.get("userDam");
-            this.userId = userIn
-            if(!(userIn)){
-                this.$cookies.remove("userDam")
+
+        async funcGetCookies(){
+
+            try{
+ 
+
+                const isCheckAuth = await axios({
+                        method: "GET",
+                        url:"http://127.0.0.1:3000/checkingauth",
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'access-token': this.$cookies.get("DamToken")
+                            }
+                        });
+
+                // console.log(isCheckAuth);
+
+                if(isCheckAuth.data.text !== "ok"){
+                    this.$cookies.remove("userDam");
+                    this.$cookies.remove("DamToken");
+                    this.$cookies.remove("DamType");
+                    this.$router.push("/")
+                }
+            }catch(err){
+                alert("Error in backend.");
+                alert("Error code: ",err);
+                this.$cookies.remove("userDam");
+                this.$cookies.remove("DamToken");
+                this.$cookies.remove("DamType");
                 this.$router.push("/")
             }
+            
+            
         },
         haddleLogout(){
             this.$cookies.remove("userDam");
+            this.$cookies.remove("DamToken");
+            this.$cookies.remove("DamType");
             this.$router.push("/");
         }
     },
+
     mounted(){
         this.funcGetCookies();
     },
-    updated(){
+
+    beforeUpdate(){
         this.setConvert();
     }
 }
