@@ -13,7 +13,7 @@ const jwt = require('jsonwebtoken');
 
 // add schema // 
 const UserProfile = require("./model/userprofile");
-const MeterImage = require("./model/meterImage");
+const meterImage = require("./model/meterImage")
 
 // add modules // 
 const upload = require("./modules/uploadMiddleware");
@@ -143,10 +143,34 @@ app.get("/", async(req, res) => {
 })
 
 // get image API //
-// app.post("/fetchimg", async (req, res) => {
-//     const {dateIn} = req.body;
-//     const dataImgRange = await meterImage.find({})
-// })
+app.post("/fetchimg", async (req, res) => {
+    
+    const {dateIn} = req.body;
+
+    const rawCurrentDate = new Date(dateIn);
+    const isCurrentDate = rawCurrentDate.setDate(rawCurrentDate.getDate()+1)
+    const currentDate = new Date(isCurrentDate);
+
+    const rawBeforeDate = new Date(dateIn);
+    const isbeforeDate = rawBeforeDate.setDate(rawBeforeDate.getDate()-1);
+    const beforeDate = new Date(isbeforeDate)
+ 
+    // console.log("rawCurrentDate ==> ",currentDate.toISOString().slice(0, 10));
+    // console.log("beforeDate ==> ", beforeDate.toISOString().slice(0, 10));
+
+    const dataImgRange = await meterImage.find({
+        "date":{
+            $gte: beforeDate.toISOString().slice(0, 10), 
+            $lte: currentDate.toISOString().slice(0, 10)
+        }
+    });
+
+    // console.log(dataImgRange);
+    res.send(dataImgRange);
+
+});
+
+
 
 // save image API //
 app.post("/image/upload", upload.single("file"), async(req, res) => {
