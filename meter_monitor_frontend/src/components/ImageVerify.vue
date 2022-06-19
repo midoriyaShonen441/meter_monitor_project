@@ -12,7 +12,9 @@ export default {
         }
     },
     methods:{
-
+        async fetchImageData(){
+            const gettingImgData = await axios.get("http://127.0.0.1:3000/")
+        },
         setConvert(){
             const day = this.date.getDate();
             const month = this.date.getMonth()+1;
@@ -46,6 +48,9 @@ export default {
                     this.$cookies.remove("DamToken");
                     this.$cookies.remove("DamType");
                     this.$router.push("/")
+                }else{
+                    this.userId = this.$cookies.get("userDam");
+
                 }
             }catch(err){
                 alert("Error in backend.");
@@ -87,14 +92,20 @@ export default {
             </div>
             <div class="search-date-input">
                 <input class="set-input-date" placeholder="01/01/1990"  v-model="typeDate"/>
-                <button><i class="fa fa-search"></i></button>
+                <button @click="haddleTypeDate"><i class="fa fa-search"></i></button>
             </div>
             <div class="calendar-container">
                 <v-date-picker  style="border-radius: 30px;" v-model="date" />
             </div>
         </div>
         <div class="collection-container">
-            <h1>debug ==> {{isDate}}</h1>
+            <div>
+                <h1>debug ==> {{isDate}}</h1>
+            </div>
+            <div class="content-container">
+                
+            </div>
+            
         </div>
     </div>
 </template>

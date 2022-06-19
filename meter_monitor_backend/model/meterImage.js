@@ -2,11 +2,12 @@ const mongoose = require("mongoose");
 
 const meterImage = new mongoose.Schema(
     {
-        zone: String,
+        filename: String,
+        zoneId: String,
         meterId: String,
-        image: String
+        date: Date,
+        image: String,
     },
-    { timestamps: true }
 );
 
 module.exports = mongoose.model("meterImage", meterImage);

@@ -6,6 +6,7 @@ require("./connection/connection").connect(); // now connection to local databas
 const express = require("express");
 const cors = require("cors");
 const imageToBase64 = require("image-to-base64");
+const fs = require("fs");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
@@ -140,8 +141,53 @@ app.post("/haddlelogin", async (req, res) => {
 app.get("/", async(req, res) => {
     res.send("OK")
 })
+
+// get image API //
+// app.post("/fetchimg", async (req, res) => {
+//     const {dateIn} = req.body;
+//     const dataImgRange = await meterImage.find({})
+// })
+
+// save image API //
 app.post("/image/upload", upload.single("file"), async(req, res) => {
-    res.send(req.file)
+    const { filename, path } = req.file
+    const meterImage = require("./model/meterImage")
+    const metadata = filename.slice(0,-4).split("_")
+    const date = metadata[2].split(";")
+    console.log(date)
+    /*{
+        fieldname: 'file',
+        originalname: 'Screen Shot 2565-06-17 at 10.05.12.png',
+        encoding: '7bit',
+        mimetype: 'image/png',
+        destination: 'uploads/',
+        filename: '1655549036262.jpg',
+        path: 'uploads/1655549036262.jpg',
+        size: 1401793
+      }
+    */
+
+    console.log(new Date(parseInt(date[2]), parseInt(date[1]), parseInt(date[0])));
+
+    imageToBase64(path) // Path to the image
+    .then(
+        async(response) => {
+            await meterImage.create({
+                filename: filename,
+                zoneId: metadata[0],
+                meterId: metadata[1],
+                date: new Date(date[2], date[1], date[0]),
+                image: response
+            })
+            res.sendStatus(200);
+        }
+    )
+    .catch(
+        async(error) => {
+            console.log(error); // Logs an error if there was one
+        }
+    )
+    fs.unlinkSync(path);
 })
 
 

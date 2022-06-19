@@ -15,4 +15,4 @@ COPY . .
 EXPOSE 3000
 
 # CMD ["/sbin/tini", "--", "node", "index.js"]
-CMD ["nodemon", "index.js"]
+CMD ["node", "index.js"]
