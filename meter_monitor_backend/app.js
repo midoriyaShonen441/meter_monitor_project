@@ -103,7 +103,7 @@ app.post("/haddlelogin", async (req, res) => {
                         userType: isUser.type
                     }
                 }
-    
+                // res.sendStatus(200).send(replyText)
                 res.send(replyText);
 
             }else{
