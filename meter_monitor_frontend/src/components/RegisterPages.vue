@@ -1,29 +1,50 @@
 <script>
+import axios from 'axios';
+
 export default {
     data(){
         return{
             // debug login // 
-            debugUsername: "admin@admin",
-            debugPassword: "12345",
             isUsername: "",
             isPassword: "",
-            isError: ""
+            ErrorText: ""
         }
     },
     methods:{
-        haddleLogin(){
-            if((this.isUsername === this.debugUsername && this.isPassword === this.debugPassword)){
-                this.isError = "";
-                this.$cookies.set('userDam',this.debugUsername); 
-                this.$router.push("/verify");
-            }else{
-                this.isError = "Invalid username or password.";
+        async haddleLogin(){
+
+            try{
+
+                const payload = {
+                    username:this.isUsername,
+                    password: this.isPassword
+                }
+
+                const isUserProfile = await axios.post("http://127.0.0.1:3000/haddlelogin",payload);
+
+                if(isUserProfile.data.isError === false){
+                    this.ErrorText = "";  
+                    this.$cookies.set('userDam',isUserProfile.data.userData.username); 
+                    this.$cookies.set("DamToken", isUserProfile.data.userData.isToken);
+                    this.$cookies.set("DamType", isUserProfile.data.userData.userType);
+                    this.$router.push("/verify");
+                }else{
+                    this.ErrorText = isUserProfile.data.text
+                }
+            }catch(err){
+                this.ErrorText = "Cannot connect to backend."
             }
+            
         },
+        // funcCheckLogin(){
+        //     if(this.$cookies.get("userDam")){
+        //         this.$router.push("/verify");
+        //     }
+        // }
        
     },
     mounted(){
-
+        // this.funcCheckLogin();
     }
 }
 </script>
@@ -34,13 +55,13 @@ export default {
             <div class="setting-container">
 
                 <div class="username-container">
-                    <input class="input-username-container" placeholder="username" v-model="isUsername" type="email" />
+                    <input class="input-username-container" placeholder="username" v-model="isUsername" type="text" required />
                 </div>
                 <div class="password-container">
-                    <input class="input-password-container" placeholder="password" v-model="isPassword" type="password" />
+                    <input class="input-password-container" placeholder="password" v-model="isPassword" type="password" required />
                 </div>
-                <div class="Error-container" style="text-align: center; color: red;" v-if="isError !== ''">
-                    <p>{{this.isError}}</p>
+                <div class="Error-container" style="text-align: center; color: red;" v-if="ErrorText !== ''">
+                    <p>{{this.ErrorText}}</p>
                 </div>
                 <div class="set-btn-container">
                     <button class="btn-login" @click="haddleLogin">Login</button>
