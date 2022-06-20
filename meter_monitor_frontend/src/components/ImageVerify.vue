@@ -8,27 +8,42 @@ export default {
             date: new Date(),
             typeDate:"",
             isDate:"",
-            userId:""
+            userId:"",
+            imgData:[]
         }
     },
     methods:{
         async fetchImageData(){
-            const gettingImgData = await axios.get("http://127.0.0.1:3000/")
+            console.log("fetch img data");
+
+            const payload = {
+                dateIn: this.isDate
+            }
+
+            const gettingImgData = await axios.post("http://127.0.0.1:3000/fetchimg",payload);
+            this.imgData = gettingImgData.data;
+            console.log(this.imgData);
+ 
+
         },
         setConvert(){
+            console.log("set convert")
             const day = this.date.getDate();
             const month = this.date.getMonth()+1;
             const year = this.date.getFullYear();
-            this.isDate = `${day}/${month}/${year}`;
+            this.isDate = `${year}-${month}-${day}`;
+            // console.log(this.isDate);
+            // this.isDate = `${day}/${month}/${year}`;
         },
 
         haddleTypeDate(){
+            
             const trimDate = this.typeDate.trim();
             console.log(trimDate);
         },
 
         async funcGetCookies(){
-
+            console.log("getting cookies")
             try{
  
 
@@ -72,12 +87,14 @@ export default {
     },
 
     mounted(){
+        this.setConvert();
         this.funcGetCookies();
+        this.fetchImageData()
     },
 
-    beforeUpdate(){
-        this.setConvert();
-    }
+    // updated(){
+    //     this.setConvert();
+    // }
 }
 </script>
 
@@ -99,11 +116,18 @@ export default {
             </div>
         </div>
         <div class="collection-container">
-            <div>
-                <h1>debug ==> {{isDate}}</h1>
+            <div class="set-title-content">
+                <div class="set-container-content">
+                    <h3 style="color: #9A9A9A">ผลการตรวจสอบประจำวันที่ {{date.getDate()}}/{{date.getMonth() + 1 }}/{{date.getFullYear() + 543}}</h3>
+                    <div class="set-from-icon">
+                        <button><i class="material-icons"></i></button>
+                        <button>List</button>
+                    </div>
+                </div>
+                <hr/>
             </div>
             <div class="content-container">
-                
+
             </div>
             
         </div>
@@ -157,5 +181,21 @@ export default {
  
 .userprofile-info > div > button{
     margin-top: 10px;   
+}
+
+.set-container-content{
+    display: flex;
+    justify-content: space-between;
+    margin-left: 30px;
+    margin-right: 30px;
+}
+
+.set-from-icon{
+    margin-top: 12px;
+    margin-right: 3px;   
+}
+
+.set-from-icon > button{
+    margin-right: 3px;   
 }
 </style>

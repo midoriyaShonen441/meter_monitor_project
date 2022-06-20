@@ -144,7 +144,7 @@ app.get("/", async(req, res) => {
 
 // get image API //
 app.post("/fetchimg", async (req, res) => {
-    
+
     const {dateIn} = req.body;
 
     const rawCurrentDate = new Date(dateIn);

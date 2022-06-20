@@ -9,5 +9,5 @@
 // console.log(dateNow);
 
 
-const senddate = new Date();
+const senddate = new Date("2022-6-18");
 console.log(senddate);
