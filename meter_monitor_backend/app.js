@@ -16,13 +16,26 @@ const UserProfile = require("./model/userprofile");
 const meterImage = require("./model/meterImage")
 
 // add modules // 
-const upload = require("./modules/uploadMiddleware");
+const upload = require("./middleware/uploadMiddleware");
 const auth = require("./middleware/auth");
 
 
 const app = express()
 app.use(express.json());
 app.use(cors());
+
+// convert int to byte value //
+const formatBytes = (bytes, decimals = 2) => {
+    if (bytes === 0) return '0 Bytes';
+
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}
 
 // setting encrypted password // 
 const encryptedRounds = 10;
@@ -174,11 +187,9 @@ app.post("/fetchimg", async (req, res) => {
 
 // save image API //
 app.post("/image/upload", upload.single("file"), async(req, res) => {
-    const { filename, path } = req.file
+    const { filename, path, size } = req.file
     const meterImage = require("./model/meterImage")
     const metadata = filename.slice(0,-4).split("_")
-    const date = metadata[2].split(";")
-    console.log(date)
     /*{
         fieldname: 'file',
         originalname: 'Screen Shot 2565-06-17 at 10.05.12.png',
@@ -191,7 +202,6 @@ app.post("/image/upload", upload.single("file"), async(req, res) => {
       }
     */
 
-    console.log(new Date(parseInt(date[2]), parseInt(date[1]), parseInt(date[0])));
 
     imageToBase64(path) // Path to the image
     .then(
@@ -200,7 +210,8 @@ app.post("/image/upload", upload.single("file"), async(req, res) => {
                 filename: filename,
                 zoneId: metadata[0],
                 meterId: metadata[1],
-                date: new Date(date[2], date[1], date[0]),
+                date: new Date(metadata[2]),
+                size: formatBytes(size),
                 image: response
             })
             res.sendStatus(200);
