@@ -9,7 +9,7 @@ COPY package-lock.json .
 
 RUN npm install && npm cache clean --force
 RUN npm install -g nodemon
-# RUN npm i bcrypt@5.0.0
+RUN npm i bcrypt@5.0.0
 COPY . .
 
 EXPOSE 3000
