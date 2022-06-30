@@ -6,6 +6,8 @@ const meterImage = new mongoose.Schema(
         zoneId: String,
         meterId: String,
         date: Date,
+        dateString: String,
+        size: String,
         image: String,
     },
 );

@@ -16,8 +16,8 @@ services:
       context: ./meter_monitor_backend
     ports:
       - 3000:3000
-    volumes:
-      - ./meter_monitor_backend:/usr/src/app:cached
+    # volumes:
+    #   - ./meter_monitor_backend:/usr/src/app:cached
 
   db:
     container_name: db

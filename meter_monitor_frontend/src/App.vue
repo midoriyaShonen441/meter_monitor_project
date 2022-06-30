@@ -1,20 +1,22 @@
 <script>
 import Header from './components/header/Header.vue';
-import Footer from './components/footer/Footer.vue';
+// import Footer from './components/footer/Footer.vue';
 
 export default {
   components:{
     Header,
-    Footer
+    // Footer
   }
 }
+
 </script>
 
 <template>
   <div class="app">
-     <Header/>
+    <Header/>
     <RouterView />
-    <Footer/>
+  
+    <!-- <Footer/> -->
   </div>
 </template>
 
@@ -23,4 +25,6 @@ export default {
   margin:0px;
   padding: 0px;
 }
+
+ 
 </style>

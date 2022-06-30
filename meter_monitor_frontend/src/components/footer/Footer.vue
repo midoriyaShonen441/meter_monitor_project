@@ -15,9 +15,9 @@ export default {
 .footer-container{
     position: fixed;
     bottom: 0;
-    left: 0;
     width: 100%;
-    height: 65px;
+    height: 20px;
+    text-align: center;
     background-color: #F4E27D;
 }
 </style>

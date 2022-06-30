@@ -8,8 +8,9 @@ exports.connect = () => {
     mongoose.connect(MONGO_URI, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
-        // authSource: 'admin',
-        // auth: { username: 'root', password: 'example' },
+        // uncomment for production //
+        // authSource: 'admin', 
+        // auth: { username: 'root', password: 'example' }, 
         // driverInfo: { name: 'Mongoose', version: '6.2.1' }
     })
     .then(() => {
