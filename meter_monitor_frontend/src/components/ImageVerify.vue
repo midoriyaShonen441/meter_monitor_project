@@ -36,6 +36,7 @@ export default {
             showModal: false,
             // menuData:"",
             setObject:{},
+            filterBtn: "img"
             // debugModalData:[{
             //     meterId:"A",
             //     zoneId:"1",
@@ -51,7 +52,13 @@ export default {
         }
     },
     methods:{
-        
+        btnSwitch(){
+            if(this.filterBtn === "img"){
+                this.filterBtn = "list"
+            }else{
+                this.filterBtn = "img"
+            }
+        },
         settingModal(menuIn){
             console.log("menuIn ===> ",menuIn);
             this.setObject = {
@@ -85,7 +92,7 @@ export default {
                 }
 
                 const gettingImgData = await axios.post("http://127.0.0.1:3000/fetchimg",payload);
-                // console.log("gettingImgData.data", gettingImgData.data.isDate)
+                // console.log("gettingImgData.data", gettingImgData.data)
                 this.isDateBase = gettingImgData.data.isDate
                 // console.log("settingDateBase ===> ",this.isDateBase);
                 // console.log("gettingImgData.data ==> ",gettingImgData.data)
@@ -97,8 +104,12 @@ export default {
  
                 gettingImgData.data.listData.forEach(element => {
                     if(element.zoneId === '1'){
+                        // console.log(element)
                         this.imgDataTest.push("data:image/png;base64, "+element.image)
                         const settingData = {
+                            dateString: element.dateString,
+                            filename: element.filename,
+                            size: element.size,
                             meterId:element.meterId,
                             zoneId: element.zoneId,
                             img: "data:image/png;base64, "+element.image
@@ -107,6 +118,9 @@ export default {
                     }else if(element.zoneId === '2'){
                         this.imgDataTest.push("data:image/png;base64, "+element.image)
                         const settingData = {
+                            dateString: element.dateString,
+                            filename: element.filename,
+                            size: element.size,
                             meterId:element.meterId,
                             zoneId: element.zoneId,
                             img: "data:image/png;base64, "+element.image
@@ -115,6 +129,9 @@ export default {
                     }else if(element.zoneId ==='3'){
                         this.imgDataTest.push("data:image/png;base64, "+element.image)
                         const settingData = {
+                            dateString: element.dateString,
+                            filename: element.filename,
+                            size: element.size,
                             meterId:element.meterId,
                             zoneId: element.zoneId,
                             img: "data:image/png;base64, "+element.image
@@ -123,6 +140,9 @@ export default {
                     }else if(element.zoneId === '4'){
                         this.imgDataTest.push("data:image/png;base64, "+element.image)
                         const settingData = {
+                            dateString: element.dateString,
+                            filename: element.filename,
+                            size: element.size,
                             meterId:element.meterId,
                             zoneId: element.zoneId,
                             img: "data:image/png;base64, "+element.image
@@ -136,9 +156,9 @@ export default {
                 this.imgData.push(zone2);
                 this.imgData.push(zone3);
                 this.imgData.push(zone4);
-                console.log(this.imgDataTest)
+                // console.log(this.imgDataTest)
 
-                console.log("data ===> ",this.imgData);
+                // console.log("data ===> ",this.imgData);
                 
             }catch(err){
                 console.log(err);
@@ -225,7 +245,6 @@ export default {
                         <div class="filter-container">
                             <div class="userprofile-info">
                                 <h4>user: {{userId}}</h4>
-                               
                                 <div>
                                     <button class="btn-logout" @click="haddleLogout">Logout</button>
                                 </div>
@@ -246,28 +265,27 @@ export default {
                                 <div class="set-container-content">
                                     <h3 style="color: #9A9A9A">ผลการตรวจสอบประจำวันที่ {{isDate}}</h3>
                                     <div class="set-from-icon">
-                                        <button>
-                                            <i class="material-icons"></i>
+                                        <button class="on-click-menu" @click="btnSwitch">
+                                            <img src="./icons/photo.png" height="20" width="20">
+                                        </button >
+                                        <button class="on-click-menu" @click="btnSwitch">
+                                            <img src="./icons/list.png" height="20" width="20">
                                         </button>
-                                        <button>List</button>
                                     </div>
                                 </div>
                                 <hr/>
                             </div>
-                                     
                             
-                            <div class="content-container" >
+                            
+                            <div class="content-container" v-if="filterBtn === 'img'">
                                 <div class="img-data-container" v-for="(isdata, index1) in imgData"   :key="index1">
                                     <h4 class="title-container">
                                         โซนที่ {{index1 + 1}}
-                                         <hr/>
+                                        <hr/>
                                     </h4>
-
                                     <div class="setting-grid-img" > 
-
                                         <div class="setting-grid-img-show" v-for="(isdata2, index2) in isdata" :key="index2">
                                             <div class="setting-modal-content" @click="settingModal(isdata2)">
-
                                                 <img class="img-on" width="250" height="250" :src="isdata2.img"   /> 
                                                 <div class="set-label">
                                                     <h5>Meter {{isdata2.meterId}}</h5>
@@ -285,29 +303,52 @@ export default {
                                 </div>
                             </div>
                             
+
+                            <div class="content-container" v-if="filterBtn === 'list'">
+                                <div class="img-data-container" v-for="(isdata, index1) in imgData"   :key="index1">
+                                    <h4 class="title-container">
+                                        โซนที่ {{index1 + 1}}
+                                        <hr/>
+                                    </h4>
+                                    <div class="setting-list-img" >   
+                                        <div class="setting-grid-img-show" >
+                                            <div class="setting-modal-content" >
+                                                <div class="set-list">
+                                                    <table >
+                                                        <tr class="table-header">
+                                                            <th>รูปภาพ</th>
+                                                            <th>ชื่อไฟล์</th>
+                                                            <th>วันที่</th>
+                                                            <th>ขนาดไฟล์</th>
+                                                        </tr>
+                                                        <tr class="setting-row" v-for="(isdata2, index2) in isdata" :key="index2" @click="settingModal(isdata2)">
+                                                            <td>
+                                                                <img height="30" width="30" :src="isdata2.img"/>
+                                                            </td> 
+                                                            <td>{{isdata2.filename}}</td>
+                                                            <td>{{isdata2.dateString}}</td>
+                                                            <td>{{isdata2.size}}</td>
+                                                        </tr>
+                                                    </table>
+                                                    <!-- <h5>Meter {{isdata2.meterId}}</h5> -->
+                                                </div>
+                                            </div>
+                                            <Teleport to="body">
+                                                <modal :dataIn="{show: showModal, data:setObject}" @close="showModal = false">
+                                                    <template #header>
+                                                        <h3>Location Zone: {{setObject.zoneId}} with Meter id: {{setObject.meterId}}, </h3>
+                                                    </template>
+                                                </modal>
+                                            </Teleport>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
                         </div>
                     </div>
-                    <div class="test">
-                        
-                        <!-- <button id="show-modal" @click="settingModal(debugModalData[0])">Show Modal</button>
-                        <button id="show-modal-1" @click="settingModal(debugModalData[1])">Show Modal2</button>
-
-                        <Teleport to="body">
-                
-                            <modal :dataIn="{show: showModal, data:menuData}"   @close="showModal = false">
-                            <template #header>
-                                <h3>custom header {{this.menuData.meterId}}</h3>
-                            </template>
-                            </modal>
-                        </Teleport> -->
-
-                         
-                       
-                    </div>
-                    
             <div class="adding-footer">
-                
-                
                 <Footer/>
             </div>
             
@@ -315,7 +356,22 @@ export default {
 </template>
 
 <style scoped>
- 
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th, td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+.on-click-menu{
+    border-radius: 3px;
+    border: 1px solid rgb(122, 122, 122);
+
+}
 
 .warp-container{
     height: 100%;
@@ -449,10 +505,8 @@ export default {
     height: 40px;
     margin: auto;
     text-align: center;
-  
     border-radius: 10px;
     margin-top: 10px;
- 
 }
 
 .modal-dialog{
@@ -467,21 +521,4 @@ export default {
     z-index: 999;
 }
 
-/* .modal-bg2{
-    background-color: rgb(90, 42, 42);
-    height: 150px;
-} */
-/* 
-.is-modal{
-    position: fixed;
-    margin: auto;
-    left: 25%;
-    top:10vh;
-    width: 50%;
-    height: 70vh;
-    align-items: center;
-    z-index: 999;
-    background-color: gray;
-    border-radius: 10px;
-} */
 </style>
