@@ -233,6 +233,29 @@ app.post("/image/upload", upload.single("file"), async(req, res) => {
     fs.unlinkSync(path);
 })
 
+app.put("/updateprofile", async (req, res) => {
+    const {username, isPassword} = req.body
+    // console.log(username , isPassword)
+    const myquery = {username: username}
+
+    try{
+        const hashPassword = bcrypt.hashSync(isPassword, encryptedRounds);
+        await UserProfile.updateOne(myquery, {password: hashPassword});
+        const replyMsg = {
+            isError: false,
+            text: "Update success."
+        }
+        res.send(replyMsg)
+    }catch(err){
+        const replyMsg = {
+            isError: true,
+            text: "cannot update data to database."
+        }
+        res.send(replyMsg)
+    }
+    
+});
+
 
 
 

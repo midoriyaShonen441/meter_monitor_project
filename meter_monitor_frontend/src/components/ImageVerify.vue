@@ -17,10 +17,9 @@ export default {
         Modal
     },
     setup() {
-      return {
+        return {
         // modules: [Pagination]
-        
-      }
+        }
     },
     data(){
         return{
@@ -52,6 +51,11 @@ export default {
         }
     },
     methods:{
+
+        btnEditProfile(){
+            console.log("edit");
+            this.$router.push("/updateprofile");
+        },
         btnSwitch(){
             if(this.filterBtn === "img"){
                 this.filterBtn = "list"
@@ -101,11 +105,11 @@ export default {
                 let zone2 = [];
                 let zone3 = [];
                 let zone4 = [];
- 
+
                 gettingImgData.data.listData.forEach(element => {
                     if(element.zoneId === '1'){
                         // console.log(element)
-                        this.imgDataTest.push("data:image/png;base64, "+element.image)
+                        // this.imgDataTest.push("data:image/png;base64, "+element.image)
                         const settingData = {
                             dateString: element.dateString,
                             filename: element.filename,
@@ -116,7 +120,7 @@ export default {
                         }
                         zone1.push(settingData)
                     }else if(element.zoneId === '2'){
-                        this.imgDataTest.push("data:image/png;base64, "+element.image)
+                        // this.imgDataTest.push("data:image/png;base64, "+element.image)
                         const settingData = {
                             dateString: element.dateString,
                             filename: element.filename,
@@ -127,7 +131,8 @@ export default {
                         }
                         zone2.push(settingData)
                     }else if(element.zoneId ==='3'){
-                        this.imgDataTest.push("data:image/png;base64, "+element.image)
+                        console.log("zone 3 ==>",element)
+                        // this.imgDataTest.push("data:image/png;base64, "+element.image)
                         const settingData = {
                             dateString: element.dateString,
                             filename: element.filename,
@@ -138,7 +143,7 @@ export default {
                         }
                         zone3.push(settingData)
                     }else if(element.zoneId === '4'){
-                        this.imgDataTest.push("data:image/png;base64, "+element.image)
+                        // this.imgDataTest.push("data:image/png;base64, "+element.image)
                         const settingData = {
                             dateString: element.dateString,
                             filename: element.filename,
@@ -151,11 +156,17 @@ export default {
                     }
                 });
  
+ 
                 // this.imgData.push(warping);
                 this.imgData.push(zone1);
                 this.imgData.push(zone2);
                 this.imgData.push(zone3);
                 this.imgData.push(zone4);
+
+                
+
+                
+
                 // console.log(this.imgDataTest)
 
                 // console.log("data ===> ",this.imgData);
@@ -176,7 +187,6 @@ export default {
         async funcGetCookies(){
             console.log("getting cookies")
             try{
- 
 
                 const isCheckAuth = await axios({
                         method: "GET",
@@ -218,8 +228,6 @@ export default {
         haddleSelectDate(){
             this.fetchImageData();
         },
-
-   
     },
 
     beforeMount(){
@@ -247,6 +255,7 @@ export default {
                                 <h4>user: {{userId}}</h4>
                                 <div>
                                     <button class="btn-logout" @click="haddleLogout">Logout</button>
+                                    <button class="btn-edit" @click="btnEditProfile">Edit</button>
                                 </div>
                             </div>
                             <div class="search-date-input">
@@ -315,7 +324,7 @@ export default {
                                             <div class="setting-modal-content" >
                                                 <div class="set-list">
                                                     <table >
-                                                        <tr class="table-header">
+                                                        <tr class="table-header" v-if="isdata.lenght !== 0">
                                                             <th>รูปภาพ</th>
                                                             <th>ชื่อไฟล์</th>
                                                             <th>วันที่</th>
@@ -351,8 +360,7 @@ export default {
             <div class="adding-footer">
                 <Footer/>
             </div>
-            
-      </div>
+    </div>
 </template>
 
 <style scoped>
@@ -411,6 +419,19 @@ th, td {
     border-radius: 5px;
     font-weight: bold;
     height: 30px;
+    width: 70px;
+    border: none;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.btn-edit{
+    margin-left: 10px;
+    background-color: rgb(212, 211, 116);
+    color:white;
+    border-radius: 5px;
+    font-weight: bold;
+    height: 30px;
+    width: 70px;
     border: none;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }

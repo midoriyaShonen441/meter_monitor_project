@@ -41,7 +41,6 @@ export default {
         //         this.$router.push("/verify");
         //     }
         // }
-       
     },
     mounted(){
         // this.funcCheckLogin();
