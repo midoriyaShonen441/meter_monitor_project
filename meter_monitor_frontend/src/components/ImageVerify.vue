@@ -2,23 +2,16 @@
 import 'v-calendar/dist/style.css';
 import axios from 'axios';
 import Footer from '../components/footer/Footer.vue';
-// import { Pagination } from 'swiper';
-// import { Swiper, SwiperSlide } from 'swiper/vue';
-// import 'swiper/css';
-// import 'swiper/css/pagination';
-// import 'swiper/css/navigation'
 import Modal from './modal/Modal.vue';
 
 export default {
     components:{
         Footer,
-        // Swiper,
-        // SwiperSlide,
         Modal
     },
     setup() {
         return {
-        // modules: [Pagination]
+
         }
     },
     data(){
@@ -56,7 +49,6 @@ export default {
             }
         },
         settingModal(menuIn){
-            // console.log("menuIn ===> ",menuIn);
             this.setObject = {
                 _id: menuIn._id,
                 meterId: menuIn.meterId,
@@ -67,7 +59,6 @@ export default {
                 img: menuIn.img,
             }
 
-            // this.menuData =  menuIn;
             this.showModal = true;
             
 
@@ -75,10 +66,7 @@ export default {
 
         async fetchImageData(){
             this.imgData = []
-            // console.log("fetch img data");
-            // console.log("set convert");
-            // console.log("fetchImageData date ===> ",this.date);
-            // this.storeDate = this.date;
+
 
             const day = this.date.getDate();
             const month = this.date.getMonth()+1;
@@ -92,8 +80,7 @@ export default {
             
             // console.log(payload)
             try{
-                
-                // console.log("this.isDate ===> ",this.isDate); 
+
 
                 const payload = {
                     dateIn: this.isDate
@@ -103,9 +90,7 @@ export default {
                 console.log(gettingImgData.data)
                 if(gettingImgData.data.isError === false){
                     this.isDateBase = gettingImgData.data.isDate
-                    // console.log("settingDateBase ===> ",this.isDateBase);
-                    // console.log("gettingImgData.data ==> ",gettingImgData.data)
-                    
+
                     let zone1 = [];
                     let zone2 = [];
                     let zone3 = [];
@@ -113,8 +98,7 @@ export default {
 
                     gettingImgData.data.listData.forEach(element => {
                         if(element.zoneId === '1'){
-                            // console.log("data ===> ",element.imgDesc)
-                            // this.imgDataTest.push("data:image/png;base64, "+element.image)
+
                             const settingData = {
                                 _id: element._id,
                                 dateString: element.dateString,
@@ -250,30 +234,15 @@ export default {
             this.fetchImageData();
         },
     },
-
-    beforeMount(){
-        // this.haddleSelectDate();
-    },
-
     mounted(){
- 
-        // console.log("mounted date ===> ",this.date)
-        // console.log("mounted storeDate ===> ",this.storeDate)
-    
-        this.funcGetCookies();
-        // this.fetchImageData();
- 
-        
+        this.funcGetCookies();  
     },
     updated(){
-        
         const day = this.date.getDate();
         const month = this.date.getMonth()+1;
         const year = this.date.getFullYear();
         
         const dateNow = `${year}-${month}-${day}`;
-        // console.log("dateNow ===> ",dateNow);
-        // console.log("this.isDate ===> ", this.isDate);
 
         if(dateNow !== this.$store.isDateG){
             // console.log("date change!")
@@ -302,16 +271,11 @@ export default {
                                 </div>
                             </div>
                             <br/>
-                            <!-- <div class="search-date-input">
-                                <input class="set-input-date" placeholder="31/01/1990"  v-model="isInputDate" />
-                                <button @click="haddleTypeDate"><i class="fa fa-search"></i></button>
-                            </div> -->
+
                             <div class="calendar-container">
                                 <v-date-picker  style="border-radius: 30px;" v-model="date" />
                             </div>
-                            <!-- <div class="container-btn-select-date">
-                                <button class="btn-select-date" @click="haddleSelectDate">select</button>
-                            </div> -->
+
                         </div>
                         <div class="collection-container">
                             <div class="set-title-content">
@@ -419,7 +383,7 @@ export default {
     width: 100%;
     height: 100%;
     opacity: 0.7;
-    z-index: 999;
+    z-index: 40;
     left: 0;
     top: 0;
 }
@@ -435,7 +399,7 @@ export default {
     width: 100%;
     height: 100%;
     opacity: 0.7;
-    z-index: 999;
+    z-index: 40;
     left: 0;
     top: 0;
 }
@@ -624,7 +588,7 @@ th, td {
 .modal-bg{
     background-color: rgb(60, 60, 60);
     height: 150px;
-    z-index: 999;
+    z-index: 40;
 }
 
 </style>

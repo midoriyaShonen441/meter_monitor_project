@@ -15,6 +15,7 @@ export default {
       isEdit:false,
       textDesc:"",
       isLoading: false, 
+      showConfirm: false
     }
   },
   methods:{
@@ -42,6 +43,7 @@ export default {
       this.imgText = this.dataIn.data.imgDesc;
       this.isEdit = true;
     },
+
 
     async haddleSaveEdit(updateType){
       console.log("updateType ==>",updateType)
@@ -147,7 +149,19 @@ export default {
       this.isEdit = false
       this.textDesc = ""
       this.$emit("close")
-    }
+    },
+
+    
+
+    haddleConfirmDelete(selectionIn){
+      this.showConfirm = true;
+      if(selectionIn === 'delete'){
+        // console.log(selectionIn)
+        this.haddleSaveEdit('delete')
+      }else if(selectionIn === 'cancel'){
+        this.showConfirm = false;
+      }
+    },
   },
   mounted(){
     // console.log("this.dataIn ==> ",this.dataIn);
@@ -162,8 +176,16 @@ export default {
 
 <template>
   <Transition name="modal">
-    
     <div v-if="dataIn.show" class="modal-mask">
+      <div class="confirm-delete" v-if="showConfirm">
+        <div class="description-delete">
+          <h3>คุณต้องการจะลบข้อมูลชุดนี้ใช่หรือไม่</h3>
+        </div>
+        <div class="haddle-btn-confirm">
+          <button class="btn-confirm-delete" @click="haddleConfirmDelete('delete')">Remove</button>
+          <button class="btn-cancel-delete" @click="haddleConfirmDelete('cancel')">Cancel</button>
+        </div>
+      </div>
     <div class="on-loading" v-if="isLoading === true"><h1>Loading...</h1></div>
       <div class="modal-wrapper">
         <div class="modal-container">
@@ -202,7 +224,7 @@ export default {
               <button class="modal-save-button" v-if="!isEdit" @click="haddleEdit">Edit</button>
               <button class="btn-save-edit" v-if="isEdit" @click="haddleSaveEdit('text')">Save</button>
               <button class="modal-delete-button" v-if="isEdit" @click="haddleCancelEdit">Cancel</button>
-              <button class="modal-delete-button" v-if="!isEdit" @click="haddleSaveEdit('delete')">Delete</button>
+              <button class="modal-delete-button" v-if="!isEdit" @click="haddleConfirmDelete">Delete</button>
             </slot>
           </div>
         </div>
@@ -212,7 +234,45 @@ export default {
 </template>
 
 <style  scoped>
+.btn-confirm-delete{
+  margin-right: 30px;
+  border: none;
+  background: rgb(234, 155, 155);
+  height: 40px;
+  width: 100px;
+  border-radius: 30px;
+}
 
+.btn-cancel-delete{
+  margin-left: 30px;
+  border: none;
+  background: rgb(181, 234, 155);
+  height: 40px;
+  width: 100px;
+  border-radius: 30px;
+}
+.haddle-btn-confirm{
+  margin-top: 20vh;
+  text-align: center;
+}
+.description-delete{
+  text-align: center;
+  margin-top: 100px;
+}
+.confirm-delete{
+  position: fixed;
+  width: 700px;
+  height: 500px;
+  margin: 5% auto; /* Will not center vertically and won't work in IE6/7. */
+  left: 0;
+  right: 0;
+  background: #fcfcfc;
+  border: 1px solid black;
+  border-radius: 30px;
+  /* margin-left: 30%;
+  margin-top: 50vh; */
+  z-index: 999;
+}
 .on-loading{
     position: fixed;
     text-align: center;
