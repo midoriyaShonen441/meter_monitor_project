@@ -9,6 +9,9 @@ const meterImage = new mongoose.Schema(
         dateString: String,
         size: String,
         image: String,
+        isDelete: Boolean,
+        isCheck: Boolean,
+        imgDesc: String
     },
 );
 

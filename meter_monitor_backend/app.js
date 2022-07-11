@@ -158,32 +158,48 @@ app.post("/fetchimg", async (req, res) => {
     const {dateIn} = req.body;
     // console.log("dateIn ===> ",dateIn);
 
-    const rawCurrentDate = new Date(dateIn);
-    const isCurrentDate = rawCurrentDate.setDate(rawCurrentDate.getDate() + 1)
-    const currentDate = new Date(isCurrentDate);
-    const StringCurrent = currentDate.toISOString().slice(0, 10);
- 
-    // const rawBeforeDate = new Date(dateIn);
-    // const isbeforeDate = rawBeforeDate.setDate(rawBeforeDate.getDate()-1);
-    // const beforeDate = new Date(isbeforeDate)
- 
+    try{
+        let setArrayData = []
+        const rawCurrentDate = new Date(dateIn);
+        const isCurrentDate = rawCurrentDate.setDate(rawCurrentDate.getDate() + 1)
+        const currentDate = new Date(isCurrentDate);
+        const StringCurrent = currentDate.toISOString().slice(0, 10);
+        
+        // const rawBeforeDate = new Date(dateIn);
+        // const isbeforeDate = rawBeforeDate.setDate(rawBeforeDate.getDate()-1);
+        // const beforeDate = new Date(isbeforeDate)
+    
+        // const dataImgRange = await meterImage.find({
+        //     "date":{
+        //         $gt: beforeDate.toISOString().slice(0, 10), 
+        //         $lt: currentDate.toISOString().slice(0, 10)
+        //     }
+        // });
+    
+        const dataImgRange = await meterImage.find({
+            dateString: StringCurrent
+        });
 
-    // const dataImgRange = await meterImage.find({
-    //     "date":{
-    //         $gt: beforeDate.toISOString().slice(0, 10), 
-    //         $lt: currentDate.toISOString().slice(0, 10)
-    //     }
-    // });
 
-    const dataImgRange = await meterImage.find({
-        dateString: StringCurrent
-    });
-
-    const replyData = {
-        isDate: dateIn,
-        listData:dataImgRange
+        dataImgRange.forEach((element) => {
+            if(element.isDelete === false){
+                setArrayData.push(element)
+            } 
+        });
+    
+        const replyData = {
+            isError: false,
+            isDate: dateIn,
+            listData: setArrayData
+        }
+        res.send(replyData);
+    
+    }catch(err){
+        const replyData = {
+            isError: true,
+            text: "cannot get data from backend."
+        }
     }
-    res.send(replyData);
 
 });
 
@@ -220,7 +236,10 @@ app.post("/image/upload", upload.single("file"), async(req, res) => {
                 date: new Date(metadata[2]),
                 dateString: DateToString,
                 size: formatBytes(size),
-                image: response
+                image: response,
+                isDelete: false, 
+                isCheck: false,
+                imgDesc:"There is no any comment for this images please click edit to add comment."
             })
             res.sendStatus(200);
         }
@@ -257,6 +276,89 @@ app.put("/updateprofile", async (req, res) => {
 });
 
 
+app.put("/updateMachine", async (req, res) => {
+    const {updateType ,isCheck, imgDesc, isDelete, _id} = req.body; 
+    // console.log(updateType ,isCheck, imgDesc, isDelete, _id)
+    const myquery = {
+        _id: _id
+    }
+
+    if(updateType === 'text'){
+        console.log("text action")
+        try{
+            await meterImage.updateOne(myquery, {
+                imgDesc: imgDesc
+            }); 
+
+            const replyText = {
+                isError: false,
+                text: "update success."
+            }
+
+            console.log(replyText)
+
+            res.send(replyText);
+
+        }catch(err){
+            const replyText = {
+                isError: true,
+                text: "error update data to database."
+            }
+
+            res.send(replyText)
+        }
+    }else if(updateType === 'delete'){
+        try{
+            await meterImage.updateOne(myquery, {
+                isDelete: isDelete,
+            }); 
+
+            const replyText = {
+                isError: false,
+                text: "delete success."
+            }
+
+            res.send(replyText);
+
+        }catch(err){
+            const replyText = {
+                isError: true,
+                text: "error update data to database."
+            }
+
+            res.send(replyText)
+        }
+    }else if(updateType === 'check'){
+        try{
+            await meterImage.updateOne(myquery, {
+                isCheck: isCheck,
+            }); 
+
+            const replyText = {
+                isError: false,
+                text: "verify success."
+            }
+
+            res.send(replyText);
+
+        }catch(err){
+            const replyText = {
+                isError: true,
+                text: "error update data to database."
+            }
+
+            res.send(replyText);
+        }
+    }else{
+        const replyText = {
+            isError: true,
+            text: "Invalid payload"
+        }
+
+        res.send(replyText);
+    }
+    
+});
 
 
 module.exports = app

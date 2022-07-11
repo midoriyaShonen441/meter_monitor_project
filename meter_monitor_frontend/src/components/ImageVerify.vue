@@ -24,8 +24,11 @@ export default {
     data(){
         return{
             date: new Date(),
+            storeDate: new Date(),
+            isDateChange: false,
             typeDate:"",
             isDate:"",
+            dateShow: "",
             isInputDate:"",
             isDateBase:"",
             userId:"",
@@ -33,21 +36,10 @@ export default {
             imgDataTest:[],
             isFirst:false, 
             showModal: false,
-            // menuData:"",
             setObject:{},
-            filterBtn: "img"
-            // debugModalData:[{
-            //     meterId:"A",
-            //     zoneId:"1",
-            //     img:"666",
-            //     desc:"aaaaa"
-            // },{
-            //     meterId:"B",
-            //     zoneId:"1",
-            //     img:"66446",
-            //     desc:"bbbbaa"
-            // }]
-
+            filterBtn: "img",
+            isLoading: true,
+            errorDesc: ""
         }
     },
     methods:{
@@ -64,13 +56,17 @@ export default {
             }
         },
         settingModal(menuIn){
-            console.log("menuIn ===> ",menuIn);
+            // console.log("menuIn ===> ",menuIn);
             this.setObject = {
+                _id: menuIn._id,
                 meterId: menuIn.meterId,
                 zoneId: menuIn.zoneId,
+                isDelete: menuIn.isDelete,
+                isCheck: menuIn.isCheck, 
+                imgDesc: menuIn.imgDesc,
                 img: menuIn.img,
-                desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
             }
+
             // this.menuData =  menuIn;
             this.showModal = true;
             
@@ -81,14 +77,22 @@ export default {
             this.imgData = []
             // console.log("fetch img data");
             // console.log("set convert");
+            // console.log("fetchImageData date ===> ",this.date);
+            // this.storeDate = this.date;
 
             const day = this.date.getDate();
             const month = this.date.getMonth()+1;
             const year = this.date.getFullYear();
+
+            this.isDate = `${year}-${month}-${day}`;
+            this.$store.isDateG = this.isDate;
+            // console.log("this.$store.isDateG  ===> ", this.$store.isDateG)
+            this.storeDate = this.isDate;
+            this.dateShow = `${day}/${month}/${year}`
             
             // console.log(payload)
             try{
-                this.isDate = `${year}-${month}-${day}`;
+                
                 // console.log("this.isDate ===> ",this.isDate); 
 
                 const payload = {
@@ -96,83 +100,101 @@ export default {
                 }
 
                 const gettingImgData = await axios.post("http://127.0.0.1:3000/fetchimg",payload);
+                console.log(gettingImgData.data)
+                if(gettingImgData.data.isError === false){
+                    this.isDateBase = gettingImgData.data.isDate
+                    // console.log("settingDateBase ===> ",this.isDateBase);
+                    // console.log("gettingImgData.data ==> ",gettingImgData.data)
+                    
+                    let zone1 = [];
+                    let zone2 = [];
+                    let zone3 = [];
+                    let zone4 = [];
+
+                    gettingImgData.data.listData.forEach(element => {
+                        if(element.zoneId === '1'){
+                            // console.log("data ===> ",element.imgDesc)
+                            // this.imgDataTest.push("data:image/png;base64, "+element.image)
+                            const settingData = {
+                                _id: element._id,
+                                dateString: element.dateString,
+                                filename: element.filename,
+                                size: element.size,
+                                meterId:element.meterId,
+                                zoneId: element.zoneId,
+                                isDelete: element.isDelete,
+                                isCheck: element.isCheck,
+                                imgDesc: element.imgDesc,
+                                img: "data:image/png;base64, "+element.image
+                            }
+                            zone1.push(settingData)
+                        }else if(element.zoneId === '2'){
+                            // this.imgDataTest.push("data:image/png;base64, "+element.image)
+                            const settingData = {
+                                _id: element._id,
+                                dateString: element.dateString,
+                                filename: element.filename,
+                                size: element.size,
+                                meterId:element.meterId,
+                                zoneId: element.zoneId,
+                                isDelete: element.isDelete,
+                                isCheck: element.isCheck,
+                                imgDesc: element.imgDesc,
+                                img: "data:image/png;base64, "+element.image
+                            }
+                            zone2.push(settingData)
+                        }else if(element.zoneId ==='3'){
+                            // console.log("zone 3 ==>",element)
+                            // this.imgDataTest.push("data:image/png;base64, "+element.image)
+                            const settingData = {
+                                _id: element._id,
+                                dateString: element.dateString,
+                                filename: element.filename,
+                                size: element.size,
+                                meterId:element.meterId,
+                                zoneId: element.zoneId,
+                                isDelete: element.isDelete,
+                                isCheck: element.isCheck,
+                                imgDesc: element.imgDesc,
+                                img: "data:image/png;base64, "+element.image
+                            }
+                            zone3.push(settingData)
+                        }else if(element.zoneId === '4'){
+                            // this.imgDataTest.push("data:image/png;base64, "+element.image)
+                            const settingData = {
+                                _id: element._id,
+                                dateString: element.dateString,
+                                filename: element.filename,
+                                size: element.size,
+                                meterId:element.meterId,
+                                zoneId: element.zoneId,
+                                isDelete: element.isDelete,
+                                isCheck: element.isCheck,
+                                imgDesc: element.imgDesc,
+                                img: "data:image/png;base64, "+element.image
+                            }
+                            zone4.push(settingData)          
+                        }
+                    });
+                    // this.imgData.push(warping);
+                    this.imgData.push(zone1);
+                    this.imgData.push(zone2);
+                    this.imgData.push(zone3);
+                    this.imgData.push(zone4);
+                    this.isLoading = false;
+                    
+                    // console.log(this.imgDataTest)
+                    // console.log("data ===> ",this.imgData);
+                }else{
+                    this.isLoading = false;
+                    this.errorDesc = gettingImgData.data.text
+                }
                 // console.log("gettingImgData.data", gettingImgData.data)
-                this.isDateBase = gettingImgData.data.isDate
-                // console.log("settingDateBase ===> ",this.isDateBase);
-                // console.log("gettingImgData.data ==> ",gettingImgData.data)
-                
-                let zone1 = [];
-                let zone2 = [];
-                let zone3 = [];
-                let zone4 = [];
-
-                gettingImgData.data.listData.forEach(element => {
-                    if(element.zoneId === '1'){
-                        // console.log(element)
-                        // this.imgDataTest.push("data:image/png;base64, "+element.image)
-                        const settingData = {
-                            dateString: element.dateString,
-                            filename: element.filename,
-                            size: element.size,
-                            meterId:element.meterId,
-                            zoneId: element.zoneId,
-                            img: "data:image/png;base64, "+element.image
-                        }
-                        zone1.push(settingData)
-                    }else if(element.zoneId === '2'){
-                        // this.imgDataTest.push("data:image/png;base64, "+element.image)
-                        const settingData = {
-                            dateString: element.dateString,
-                            filename: element.filename,
-                            size: element.size,
-                            meterId:element.meterId,
-                            zoneId: element.zoneId,
-                            img: "data:image/png;base64, "+element.image
-                        }
-                        zone2.push(settingData)
-                    }else if(element.zoneId ==='3'){
-                        console.log("zone 3 ==>",element)
-                        // this.imgDataTest.push("data:image/png;base64, "+element.image)
-                        const settingData = {
-                            dateString: element.dateString,
-                            filename: element.filename,
-                            size: element.size,
-                            meterId:element.meterId,
-                            zoneId: element.zoneId,
-                            img: "data:image/png;base64, "+element.image
-                        }
-                        zone3.push(settingData)
-                    }else if(element.zoneId === '4'){
-                        // this.imgDataTest.push("data:image/png;base64, "+element.image)
-                        const settingData = {
-                            dateString: element.dateString,
-                            filename: element.filename,
-                            size: element.size,
-                            meterId:element.meterId,
-                            zoneId: element.zoneId,
-                            img: "data:image/png;base64, "+element.image
-                        }
-                        zone4.push(settingData)          
-                    }
-                });
- 
- 
-                // this.imgData.push(warping);
-                this.imgData.push(zone1);
-                this.imgData.push(zone2);
-                this.imgData.push(zone3);
-                this.imgData.push(zone4);
-
-                
-
-                
-
-                // console.log(this.imgDataTest)
-
-                // console.log("data ===> ",this.imgData);
                 
             }catch(err){
                 console.log(err);
+                this.isLoading = false;
+                this.errorDesc = err;
             }
         },
 
@@ -185,7 +207,7 @@ export default {
         },
 
         async funcGetCookies(){
-            console.log("getting cookies")
+            // console.log("getting cookies")
             try{
 
                 const isCheckAuth = await axios({
@@ -224,7 +246,6 @@ export default {
             this.$cookies.remove("DamType");
             this.$router.push("/");
         },
-
         haddleSelectDate(){
             this.fetchImageData();
         },
@@ -235,44 +256,67 @@ export default {
     },
 
     mounted(){
-        // this.setConvert();
+ 
+        // console.log("mounted date ===> ",this.date)
+        // console.log("mounted storeDate ===> ",this.storeDate)
+    
         this.funcGetCookies();
-        if(this.isFirst === false){
-            this.fetchImageData();
-            this.isFirst = true
-        }
+        // this.fetchImageData();
+ 
         
     },
+    updated(){
+        
+        const day = this.date.getDate();
+        const month = this.date.getMonth()+1;
+        const year = this.date.getFullYear();
+        
+        const dateNow = `${year}-${month}-${day}`;
+        // console.log("dateNow ===> ",dateNow);
+        // console.log("this.isDate ===> ", this.isDate);
+
+        if(dateNow !== this.$store.isDateG){
+            // console.log("date change!")
+            this.isLoading = true;
+            this.fetchImageData();
+        }
+    }
 }
 
 </script>
 
 <template>
-      <div class="warp-container">
+    <div class="warp-container">
+        <div class="on-loading" v-if="isLoading === true"><h1>Loading...</h1></div>
+        <div class="error-desc" v-if="errorDesc !== ''"><h1>{{ errorDesc }}</h1></div>
             <div class="verify-container">
                         <div class="filter-container">
-                            <div class="userprofile-info">
+                            <div class="title-username">
                                 <h4>user: {{userId}}</h4>
+                            </div>
+                            <div class="userprofile-info">
+                                
                                 <div>
                                     <button class="btn-logout" @click="haddleLogout">Logout</button>
                                     <button class="btn-edit" @click="btnEditProfile">Edit</button>
                                 </div>
                             </div>
-                            <div class="search-date-input">
+                            <br/>
+                            <!-- <div class="search-date-input">
                                 <input class="set-input-date" placeholder="31/01/1990"  v-model="isInputDate" />
                                 <button @click="haddleTypeDate"><i class="fa fa-search"></i></button>
-                            </div>
+                            </div> -->
                             <div class="calendar-container">
                                 <v-date-picker  style="border-radius: 30px;" v-model="date" />
                             </div>
-                            <div class="container-btn-select-date">
+                            <!-- <div class="container-btn-select-date">
                                 <button class="btn-select-date" @click="haddleSelectDate">select</button>
-                            </div>
+                            </div> -->
                         </div>
                         <div class="collection-container">
                             <div class="set-title-content">
                                 <div class="set-container-content">
-                                    <h3 style="color: #9A9A9A">ผลการตรวจสอบประจำวันที่ {{isDate}}</h3>
+                                    <h3 style="color: #9A9A9A">ผลการตรวจสอบประจำวันที่ {{dateShow}}</h3>
                                     <div class="set-from-icon">
                                         <button class="on-click-menu" @click="btnSwitch">
                                             <img src="./icons/photo.png" height="20" width="20">
@@ -294,9 +338,12 @@ export default {
                                     </h4>
                                     <div class="setting-grid-img" > 
                                         <div class="setting-grid-img-show" v-for="(isdata2, index2) in isdata" :key="index2">
-                                            <div class="setting-modal-content" @click="settingModal(isdata2)">
+                                            <div class="setting-modal-content" v-if="isdata2.isDelete !== true" @click="settingModal(isdata2)">
                                                 <img class="img-on" width="250" height="250" :src="isdata2.img"   /> 
-                                                <div class="set-label">
+                                                <div class="set-label" v-if="isdata2.isCheck === false">
+                                                    <h5>Meter {{isdata2.meterId}}</h5>
+                                                </div>
+                                                <div class="set-label-check" v-if="isdata2.isCheck === true">
                                                     <h5>Meter {{isdata2.meterId}}</h5>
                                                 </div>
                                             </div>
@@ -365,6 +412,39 @@ export default {
 
 <style scoped>
 
+.on-loading{
+    position: fixed;
+    text-align: center;
+    background-color: rgb(199, 199, 199);
+    width: 100%;
+    height: 100%;
+    opacity: 0.7;
+    z-index: 999;
+    left: 0;
+    top: 0;
+}
+
+.on-loading > h1{
+    margin-top: 25%;
+}
+
+.error-desc{
+    position: fixed;
+    text-align: center;
+    background-color: rgb(255, 255, 255);
+    width: 100%;
+    height: 100%;
+    opacity: 0.7;
+    z-index: 999;
+    left: 0;
+    top: 0;
+}
+
+.error-desc > h1{
+    margin-top: 25%;
+    color: red;
+}
+
 table {
     border-collapse: collapse;
     width: 100%;
@@ -394,7 +474,6 @@ th, td {
     margin-bottom: 20px;
 }
 .filter-container{
-    
     margin-top: 30px;
     text-align: center;
     background-color: #EAEAEA33;
@@ -410,7 +489,6 @@ th, td {
 
 .content-container{
     margin-bottom: 100px;
- 
 }
 
 .btn-logout{
@@ -493,12 +571,21 @@ th, td {
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
 }
+
+.set-label-check{
+    text-align: center;
+    height: 30px;
+    width: 250px;
+    background-color: rgb(143, 255, 206);
+    color: grey;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
 .title-container{
     color: rgb(90, 88, 88);
     margin-top: 30px;
 }
 
- 
 .img-on{
     border-top-right-radius: 10px;
     border-top-left-radius: 10px;
@@ -518,9 +605,7 @@ th, td {
     margin-top: 20%;
 }
 
- 
 /*  test modal */
- 
 .modal-btn{
     width: 30%;
     height: 40px;

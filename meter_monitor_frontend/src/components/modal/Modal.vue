@@ -1,57 +1,208 @@
 <script>
+import axios from 'axios';
+
 export default {
   props: {
     // show: Boolean,
     dataIn: Object
   },
-  // mounted(){
-  //   console.log("this.dataIn ==> ",this.dataIn)
-  // }
+  data(){
+    return{
+      isDesc: "",
+      isCheck: false,
+      isDelete: false,
+      errorDesc: "",
+      isEdit:false,
+      textDesc:"",
+      isLoading: false, 
+    }
+  },
+  methods:{
+    async fetchImg(){
+      const payload = {
+        isCheck: isCheck,
+        imgDesc: imgDesc,
+        isDelete: isDelete,
+        _id: _id
+      }
+
+      try{
+        const returnDataUpdate = await axios.put("/updateMachine",payload);
+        if(returnDataUpdate.data.isError === false){
+          alert(returnDataUpdate.data.text);
+        }else{
+          this.errorDesc = returnDataUpdate.data.text;
+        }
+      }catch(err){
+        this.errorDesc = "Cannot connnect to backend."
+      }
+    },
+  
+    haddleEdit(){
+      this.imgText = this.dataIn.data.imgDesc;
+      this.isEdit = true;
+    },
+
+    async haddleSaveEdit(updateType){
+      console.log("updateType ==>",updateType)
+      this.isLoading = true
+      
+
+      if(updateType === "text"){
+        const payload = {
+          _id: this.dataIn.data._id,
+          isDelete: this.dataIn.data.isDelete, 
+          imgDesc: this.imgText, 
+          isCheck: this.dataIn.data.isCheck,
+          updateType: updateType
+        }
+
+        try{
+          const dataUpdate = await axios.put("http://127.0.0.1:3000/updateMachine", payload);
+          console.log("dataUpdate ==> ",dataUpdate.data)
+          if(dataUpdate.data.isError === false){
+            alert(dataUpdate.data.text);
+            this.isLoading = false;
+            this.dataIn.data.imgDesc = this.imgText
+            this.$store.isDateG = ""
+            
+          }else{
+            this.errorDesc = dataUpdate.data.text;
+            this.isLoading = false;
+          }
+        }catch(err){
+          this.errorDesc = err;
+          this.isLoading = false;
+        }
+
+      }else if(updateType === 'check'){
+
+        const payload = {
+          _id: this.dataIn.data._id,
+          isDelete: this.dataIn.data.isDelete, 
+          imgDesc: this.imgText, 
+          isCheck: true,
+          updateType: updateType
+        }
+
+        try{
+          const dataUpdate = await axios.put("http://127.0.0.1:3000/updateMachine", payload);
+          console.log("dataUpdate ==> ",dataUpdate.data)
+          if(dataUpdate.data.isError === false){
+            alert(dataUpdate.data.text);
+            this.isLoading = false;
+            this.dataIn.data.imgDesc = this.imgText
+            this.$store.isDateG = ""
+            this.$emit("close")
+          }else{
+            this.errorDesc = dataUpdate.data.text;
+            this.isLoading = false;
+          }
+        }catch(err){
+          this.errorDesc = err;
+          this.isLoading = false;
+        }
+
+      }else if(updateType === "delete"){
+        const payload = {
+          _id: this.dataIn.data._id,
+          isDelete: true, 
+          imgDesc: this.imgText, 
+          isCheck: this.dataIn.data.isCheck,
+          updateType: updateType
+        }
+
+        try{
+          const dataUpdate = await axios.put("http://127.0.0.1:3000/updateMachine", payload);
+          console.log("dataUpdate ==> ",dataUpdate.data)
+          if(dataUpdate.data.isError === false){
+            alert(dataUpdate.data.text);
+            this.isLoading = false;
+            this.dataIn.data.imgDesc = this.imgText
+            this.$store.isDateG = ""
+            this.$emit("close")
+          }else{
+            this.errorDesc = dataUpdate.data.text;
+            this.isLoading = false;
+          }
+        }catch(err){
+          this.errorDesc = err;
+          this.isLoading = false;
+        }
+      }
+
+      
+      
+    },
+
+    haddleCancelEdit(){
+      this.isEdit = false
+    },
+
+    haddleExit(){
+      this.isDesc = ""
+      this.isCheck = false
+      this.isDelete = false
+      this.errorDesc = ""
+      this.isEdit = false
+      this.textDesc = ""
+      this.$emit("close")
+    }
+  },
+  mounted(){
+    // console.log("this.dataIn ==> ",this.dataIn);
+    // this.textDesc =  this.dataIn.data.imgDesc
+  },
+  updated(){
+    // this.textDesc =  this.dataIn.data.imgDesc
+  }
+ 
 }
 </script>
 
 <template>
   <Transition name="modal">
+    
     <div v-if="dataIn.show" class="modal-mask">
+    <div class="on-loading" v-if="isLoading === true"><h1>Loading...</h1></div>
       <div class="modal-wrapper">
         <div class="modal-container">
           <div class="modal-header">
             <slot name="header">default header</slot>
+            <button class="btn-close-modal" @click="haddleExit">X</button>
           </div>
 
           <div class="modal-body">
             <div class="body-content">
               <img :src="this.dataIn.data.img" height="450" width="450" />
-              <div class="setting-content-text">
-                <h6>Description</h6>
-                <div class="text-container">
-                  <p>{{ this.dataIn.data.desc }}</p>
-                </div>
+              <div class="setting-content-text" >
+                <h6>
+                  Description
+                </h6>
+
+                  <div class="text-container" v-if="errorDesc === ''" >
+                    <p v-if="!isEdit">
+                      {{dataIn.data.imgDesc}}
+                    </p>
+                    <div v-if="isEdit" >
+                      <textarea class="textarea-desc" v-model="imgText"></textarea>
+                    </div>
+                  </div>
+                
+                  <div  class="text-container" v-if="errorDesc !== ''">
+                      <h1 class="error-desc">{{errorDesc}}</h1>
+                  </div>
               </div>
-              
             </div>
           </div>
 
           <div class="modal-footer">
             <slot name="footer">
-              <button
-                class="modal-check-button"
-                @click="$emit('close')"
-              >
-              Check
-              </button>
-              <button
-                class="modal-save-button"
-                @click="$emit('close')"
-              >
-              Save
-              </button>
-              <button
-                class="modal-delete-button"
-                @click="$emit('close')"
-              >
-              Delete
-              </button>
+              <button class="modal-check-button" v-if="!isEdit" @click="haddleSaveEdit('check')">Check</button>
+              <button class="modal-save-button" v-if="!isEdit" @click="haddleEdit">Edit</button>
+              <button class="btn-save-edit" v-if="isEdit" @click="haddleSaveEdit('text')">Save</button>
+              <button class="modal-delete-button" v-if="isEdit" @click="haddleCancelEdit">Cancel</button>
+              <button class="modal-delete-button" v-if="!isEdit" @click="haddleSaveEdit('delete')">Delete</button>
             </slot>
           </div>
         </div>
@@ -60,7 +211,29 @@ export default {
   </Transition>
 </template>
 
-<style >
+<style  scoped>
+
+.on-loading{
+    position: fixed;
+    text-align: center;
+    background-color: rgb(199, 199, 199);
+    width: 100%;
+    height: 100%;
+    opacity: 0.7;
+    z-index: 999;
+    left: 0;
+    top: 0;
+}
+
+.on-loading > h1{
+    margin-top: 25%;
+}
+
+.error-desc{
+  text-align: center;
+  margin-top: 10%;
+  color: red;
+}
 .modal-mask {
   position: fixed;
   z-index: 9998;
@@ -119,7 +292,10 @@ export default {
 
 .setting-content-text{
   width: 55%;
- 
+}
+
+.setting-content-text > h6{
+  margin-left: 10px;
 }
 
 .modal-footer{
@@ -149,5 +325,33 @@ export default {
   border-radius: 5px;
   background-color: #ABE88E;
   color: whitesmoke;
+}
+
+.text-container{
+  margin-left: 20px;
+}
+
+.textarea-desc{
+  width: 90%;
+  height: 350px;
+}
+
+.btn-edit-container{
+  text-align: right;
+  margin-top: 10px;
+}
+
+.btn-save-edit{
+  width: 120px;
+  border: 1px solid #ABE88E;
+  border-radius: 5px;
+  background-color: #ABE88E;
+  color: whitesmoke;
+}
+
+.btn-close-modal{
+  border: none;
+  border-radius: 50%;
+  background-color: rgb(217, 217, 217);
 }
 </style>
