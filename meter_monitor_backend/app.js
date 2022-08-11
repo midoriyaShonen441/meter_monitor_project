@@ -328,7 +328,7 @@ app.put("/updateMachine", async (req, res) => {
 
             res.send(replyText)
         }
-    }else if(updateType === 'check'){
+    }else if(updateType === 'check' || updateType === 'uncheck'){
         try{
             await meterImage.updateOne(myquery, {
                 isCheck: isCheck,

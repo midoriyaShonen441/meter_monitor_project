@@ -46,7 +46,7 @@ export default {
 
 
     async haddleSaveEdit(updateType){
-      console.log("updateType ==>",updateType)
+      // console.log("updateType ==>",updateType)
       this.isLoading = true
       
 
@@ -61,7 +61,7 @@ export default {
 
         try{
           const dataUpdate = await axios.put("http://127.0.0.1:3000/updateMachine", payload);
-          console.log("dataUpdate ==> ",dataUpdate.data)
+          // console.log("dataUpdate ==> ",dataUpdate.data)
           if(dataUpdate.data.isError === false){
             alert(dataUpdate.data.text);
             this.isLoading = false;
@@ -111,6 +111,32 @@ export default {
           isDelete: true, 
           imgDesc: this.imgText, 
           isCheck: this.dataIn.data.isCheck,
+          updateType: updateType
+        }
+
+        try{
+          const dataUpdate = await axios.put("http://127.0.0.1:3000/updateMachine", payload);
+          console.log("dataUpdate ==> ",dataUpdate.data)
+          if(dataUpdate.data.isError === false){
+            alert(dataUpdate.data.text);
+            this.isLoading = false;
+            this.dataIn.data.imgDesc = this.imgText
+            this.$store.isDateG = ""
+            this.$emit("close")
+          }else{
+            this.errorDesc = dataUpdate.data.text;
+            this.isLoading = false;
+          }
+        }catch(err){
+          this.errorDesc = err;
+          this.isLoading = false;
+        }
+      }else if(updateType === "uncheck"){
+        const payload = {
+          _id: this.dataIn.data._id,
+          isDelete: this.dataIn.data.isDelete, 
+          imgDesc: this.imgText, 
+          isCheck: false,
           updateType: updateType
         }
 
@@ -220,7 +246,8 @@ export default {
 
           <div class="modal-footer">
             <slot name="footer">
-              <button class="modal-check-button" v-if="!isEdit" @click="haddleSaveEdit('check')">Check</button>
+              <button class="modal-check-button" v-if="!(isEdit) && dataIn.checking === false" @click="haddleSaveEdit('check')">Check</button>
+              <button class="modal-uncheck-button" v-if="dataIn.checking === true" @click="haddleSaveEdit('uncheck')">Uncheck</button>
               <button class="modal-save-button" v-if="!isEdit" @click="haddleEdit">Edit</button>
               <button class="btn-save-edit" v-if="isEdit" @click="haddleSaveEdit('text')">Save</button>
               <button class="modal-delete-button" v-if="isEdit" @click="haddleCancelEdit">Cancel</button>
@@ -384,6 +411,14 @@ export default {
   border: 1px solid #ABE88E;
   border-radius: 5px;
   background-color: #ABE88E;
+  color: whitesmoke;
+}
+
+.modal-uncheck-button{
+  width: 120px;
+  border: 1px solid #ec4949;
+  border-radius: 5px;
+  background-color: #ec4949;
   color: whitesmoke;
 }
 

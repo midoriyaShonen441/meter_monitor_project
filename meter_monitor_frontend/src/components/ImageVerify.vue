@@ -32,13 +32,14 @@ export default {
             setObject:{},
             filterBtn: "img",
             isLoading: true,
-            errorDesc: ""
+            errorDesc: "",
+            isChecking: false
         }
     },
     methods:{
 
         btnEditProfile(){
-            console.log("edit");
+            // console.log("edit");
             this.$router.push("/updateprofile");
         },
         btnSwitch(){
@@ -49,6 +50,7 @@ export default {
             }
         },
         settingModal(menuIn){
+            // console.log("menuIn ==> ",menuIn)
             this.setObject = {
                 _id: menuIn._id,
                 meterId: menuIn.meterId,
@@ -58,7 +60,7 @@ export default {
                 imgDesc: menuIn.imgDesc,
                 img: menuIn.img,
             }
-
+            this.isChecking = menuIn.isCheck;
             this.showModal = true;
             
 
@@ -87,7 +89,7 @@ export default {
                 }
 
                 const gettingImgData = await axios.post("http://127.0.0.1:3000/fetchimg",payload);
-                console.log(gettingImgData.data)
+                // console.log(gettingImgData.data)
                 if(gettingImgData.data.isError === false){
                     this.isDateBase = gettingImgData.data.isDate
 
@@ -186,7 +188,7 @@ export default {
             const trimDate = this.isInputDate.trim();
             const convertDate = trimDate.split("/");
             const genNewDate = convertDate[2]+"-"+convertDate[1]+"-"+convertDate[0]
-            console.log(genNewDate);
+            // console.log(genNewDate);
             this.isDate = genNewDate;
         },
 
@@ -312,7 +314,7 @@ export default {
                                                 </div>
                                             </div>
                                             <Teleport to="body">
-                                                <modal :dataIn="{show: showModal, data:setObject}" @close="showModal = false">
+                                                <modal :dataIn="{show: showModal, data:setObject, checking:isChecking}" @close="showModal = false">
                                                     <template #header>
                                                         <h3>Location Zone: {{setObject.zoneId}} with Meter id: {{setObject.meterId}}, </h3>
                                                     </template>
@@ -337,6 +339,7 @@ export default {
                                                     <table >
                                                         <tr class="table-header" v-if="isdata.lenght !== 0">
                                                             <th>รูปภาพ</th>
+                                                            <th>สถานะ</th>
                                                             <th>ชื่อไฟล์</th>
                                                             <th>วันที่</th>
                                                             <th>ขนาดไฟล์</th>
@@ -344,7 +347,11 @@ export default {
                                                         <tr class="setting-row" v-for="(isdata2, index2) in isdata" :key="index2" @click="settingModal(isdata2)">
                                                             <td>
                                                                 <img height="30" width="30" :src="isdata2.img"/>
-                                                            </td> 
+                                                            </td>
+                                                            <td>
+                                                                <span class="status-check"  v-if="isdata2.isCheck === true">ยืนยัน</span>
+                                                                <span class="status-not-check"  v-if="isdata2.isCheck === false">ยังไม่ได้ยืนยัน</span>
+                                                            </td>
                                                             <td>{{isdata2.filename}}</td>
                                                             <td>{{isdata2.dateString}}</td>
                                                             <td>{{isdata2.size}}</td>
@@ -376,6 +383,19 @@ export default {
 
 <style scoped>
 
+.status-check{
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    color: rgb(42, 144, 52)
+}
+
+.status-not-check{
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    color: rgb(255, 47, 47)
+}
 .on-loading{
     position: fixed;
     text-align: center;
