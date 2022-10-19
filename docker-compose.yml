@@ -23,6 +23,7 @@ services:
     container_name: backend
     build: 
       context: ./meter_monitor_backend
+    restart: always
     ports:
       - 3000:3000
     networks:

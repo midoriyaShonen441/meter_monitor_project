@@ -15,4 +15,4 @@ const meterImage = new mongoose.Schema(
     },
 );
 
-module.exports = mongoose.model("meterImage", meterImage);
+module.exports = mongoose.model("meter_image", meterImage);
