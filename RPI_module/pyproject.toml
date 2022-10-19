@@ -10,6 +10,7 @@ dependencies = [
     "opencv-python>=4.6.0.66",
     "flask>=2.2.2",
     "requests>=2.28.1",
+    "aiohttp>=3.8.3",
 ]
 requires-python = ">=3.10"
 license = {text = "MIT"}
