@@ -35,12 +35,12 @@ services:
     image: mongo:latest
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_ROOT_PASSWORD: root
       MONGO_INITDB_DATABASE: monitorDam
     ports:
       - 27017:27017
     volumes:
-      - database:/data/db
+      # - database:/data/db
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
       - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro # for init user & database
@@ -48,13 +48,25 @@ services:
       - bridge
 
   mongo-express:
-    image: mongo-express:latest
+    container_name: mongo-express
+    image: mongo-express
+    restart: always
+    environment:
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: root
+      ME_CONFIG_MONGODB_URL: mongodb://root:root@db:27017/
+      # ME_CONFIG_SITE_BASEURL: /mongoexpress/
     ports:
       - 8081:8081
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: example
-      ME_CONFIG_MONGODB_URL: mongodb://root:example@db:27017/monitorDam
+    links:
+      - db
+    depends_on:
+      - db
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
     networks:
       - bridge
 

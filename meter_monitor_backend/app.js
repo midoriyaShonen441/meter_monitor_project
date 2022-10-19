@@ -93,6 +93,7 @@ app.post("/haddleregister", async (req, res) => {
 // user login // 
 app.post("/haddlelogin", async (req, res) => {
     const {username, password} = req.body; 
+    console.log(`user: ${username}, pass: ${password}`)
 
     if((username, password)){
         
