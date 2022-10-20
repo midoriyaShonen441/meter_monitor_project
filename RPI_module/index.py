@@ -15,14 +15,6 @@ class connection:
                 result = await res.text()
                 print(result)
 
-    # async def upload(self, file):
-    #     url = self.url + "/image/upload"
-    #     with open(file, "rb") as f:
-    #         print(f)
-            # async with aiohttp.ClientSession() as session:
-            #     async with session.post(url, data=f) as res:
-            #         print(await res.text())
-
     async def test_debug(self):
         url = self.url + "/"
         async with aiohttp.ClientSession() as session:
@@ -42,11 +34,4 @@ for file_name in file_names:
                    open(file, 'rb'),
                    filename=file_name,
                    content_type='image/png')
-    # server.upload(data)
-#     files = {
-#         'file': open(file, 'rb'),
-#         'filename': file_name,
-#         'path': file
-#     }
-# print(files)
     asyncio.run(server.upload(data))

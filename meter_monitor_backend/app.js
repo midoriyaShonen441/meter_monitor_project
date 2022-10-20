@@ -139,9 +139,6 @@ app.get("/", async (req, res) => {
 // get image API //
 app.post("/fetchimg", async (req, res) => {
   const { dateIn } = req.body;
-  console.log(`dateIn: ${dateIn}`);
-  console.log(`dateIn: ${typeof dateIn}`);
-  // console.log("dateIn ===> ",dateIn);
 
   try {
     let setArrayData = [];
@@ -164,8 +161,6 @@ app.post("/fetchimg", async (req, res) => {
     const dataImgRange = await meterImage.find({
       dateString: StringCurrent,
     });
-    console.log(StringCurrent);
-    console.log(dataImgRange);
 
     dataImgRange.forEach((element) => {
       if (element.isDelete === false) {
