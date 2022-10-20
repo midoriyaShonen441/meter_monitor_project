@@ -2,39 +2,39 @@
 import axios from 'axios';
 
 export default {
-    data(){
-        return{
+    data() {
+        return {
             // debug login // 
             isUsername: "",
             isPassword: "",
             ErrorText: ""
         }
     },
-    methods:{
-        async haddleLogin(){
+    methods: {
+        async haddleLogin() {
 
-            try{
+            try {
 
-                  const payload = {
-                    username:this.isUsername,
+                const payload = {
+                    username: this.isUsername,
                     password: this.isPassword
                 }
 
-                 const isUserProfile = await axios.post("http://localhost:3000/haddlelogin",payload);
-
-                if(isUserProfile.data.isError === false){
-                    this.ErrorText = "";  
-                     this.$cookies.set('userDam',isUserProfile.data.userData.username); 
-                     this.$cookies.set("DamToken", isUserProfile.data.userData.isToken);
-                    this .$cookies.set("DamType", isUserProfile.data.userData.userType);
-                     this.$outer.push("/verify");
-                }else{
+                const isUserProfile = await axios.post("http://localhost:3000/haddlelogin", payload);
+                console.log(isUserProfile.data.isError)
+                if (isUserProfile.data.isError === false) {
+                    this.ErrorText = "";
+                    this.$cookies.set('userDam', isUserProfile.data.userData.username);
+                    this.$cookies.set("DamToken", isUserProfile.data.userData.isToken);
+                    this.$cookies.set("DamType", isUserProfile.data.userData.userType);
+                    this.$router.push("/verify");
+                } else {
                     this.ErrorText = isUserProfile.data.text
                 }
-            }catch(err){
+            } catch (err) {
                 this.ErrorText = "Cannot connect to backend."
             }
-            
+
         },
         // f uncCheckLogin(){
         //     if(this.$cookies.get("userDam")){
@@ -42,11 +42,11 @@ export default {
         //     }
         // }
     },
-    mounted(){
-         // thi s.funcCheckLogin();
-     }
+    mounted() {
+        // thi s.funcCheckLogin();
+    }
 }
-  </script>
+</script>
 
 <template>
     <div class="register-container">
