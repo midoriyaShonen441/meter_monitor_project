@@ -5,7 +5,7 @@ export default {
     data(){
         return{
             textError: "",
-            new Password: "",
+            newPassword: "",
             oldPassword: ""
         }
     },

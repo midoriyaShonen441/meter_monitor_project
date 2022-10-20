@@ -5,135 +5,200 @@ export default {
   props: {
     // show: Boolean,
     dataIn: Object
-  
-     {
-    rn{
-    isDesc: "",
-    isCheck: false,
-    Delete: false,
+  },
+  data(){
+    return{
+      isDesc: "",
+      isCheck: false,
+      isDelete: false,
       errorDesc: "",
-    Edit:false,
-    textDesc:"",
-    isLo ading: false, 
-    owConf irm: false
-                        tchImg(){ 
-      payload  = {
-      eck: isCheck,
-      esc: imgDesc ,
-      lete: isDel ete,
-       _id
-                            t returnDataUpdate = await axios.put("/updateMachine",payload);
-      eturnDataU pdate.data.isError === false){
-      ert(returnDataUpdate.data.text);
-      e{
-      is.errorDesc = returnDataUpdate.data.text;
-          atch(err){
-      this.errorDesc = "Cannot connnect to backend."
+      isEdit:false,
+      textDesc:"",
+      isLoading: false, 
+      showConfirm: false
     }
-     },
-           it(){
-      mgText = this.dataIn.data.imgDesc;
-    is.isEdit = true;
-                           d dleS aveEdit(updateType){
-        .log("updateType ==>",updateType)
-      sLoading = true
-               ateType === "text"){
-      t payload = {
-        his.dataIn.data._id,
-        te: this.dataIn.data.isDelete, 
-        c: this.imgText, 
-        k: this.dataIn.data.isCheck,
-        Type: updateType
-                      
-      nst dataUpdate = await axios.put("http://localhost:3000/updateMachine", payload);
-       console.log("dataUpdate ==> ",dataUpdate.data)
-(dataUpdate.data.isError === false){
-            alert(dataUpdate.data.text);
-      this.isLoading = false;
-            this.dataIn.data.imgDesc = this.imgText
-        this.$store.isDate G = ""
+  },
+  methods:{
+    async fetchImg(){
+      const payload = {
+        isCheck: isCheck,
+        imgDesc: imgDesc,
+        isDelete: isDelete,
+        _id: _id
+      }
+
+      try{
+        const returnDataUpdate = await axios.put("/updateMachine",payload);
+        if(returnDataUpdate.data.isError === false){
+          alert(returnDataUpdate.data.text);
+        }else{
+          this.errorDesc = returnDataUpdate.data.text;
+        }
+      }catch(err){
+        this.errorDesc = "Cannot connnect to backend."
+      }
+    },
+  
+    haddleEdit(){
+      this.imgText = this.dataIn.data.imgDesc;
+      this.isEdit = true;
+    },
+
+
+    async haddleSaveEdit(updateType){
+      // console.log("updateType ==>",updateType)
+      this.isLoading = true
       
+
+      if(updateType === "text"){
+        const payload = {
+          _id: this.dataIn.data._id,
+          isDelete: this.dataIn.data.isDelete, 
+          imgDesc: this.imgText, 
+          isCheck: this.dataIn.data.isCheck,
+          updateType: updateType
+        }
+
+        try{
+          const dataUpdate = await axios.put("http://localhost:3000/updateMachine", payload);
+          // console.log("dataUpdate ==> ",dataUpdate.data)
+          if(dataUpdate.data.isError === false){
+            alert(dataUpdate.data.text);
+            this.isLoading = false;
+            this.dataIn.data.imgDesc = this.imgText
+            this.$store.isDateG = ""
+            
           }else{
             this.errorDesc = dataUpdate.data.text;
-      this.isLoading = false;
-              ch(err){
+            this.isLoading = false;
+          }
+        }catch(err){
           this.errorDesc = err;
-      is.isLoading = false;
-                  if(updateType === 'check'){
-      t payload = {
-      d: this.dataIn.data._id,
-      Del ete: this.dataIn.data.isDelete, 
+          this.isLoading = false;
+        }
+
+      }else if(updateType === 'check'){
+
+        const payload = {
+          _id: this.dataIn.data._id,
+          isDelete: this.dataIn.data.isDelete, 
           imgDesc: this.imgText, 
           isCheck: true,
-        Type: updateType
-                          try{
-        dataUpdate = await axios.put("http://localhost:3000/updateMachine", paylo ad);
-        e.log("dataUpdate ==> ",dataUpdate.data)
-        aU pdate.data.isError === false){
-           taUpdate.data.text);
+          updateType: updateType
+        }
+
+        try{
+          const dataUpdate = await axios.put("http://localhost:3000/updateMachine", payload);
+          console.log("dataUpdate ==> ",dataUpdate.data)
+          if(dataUpdate.data.isError === false){
+            alert(dataUpdate.data.text);
             this.isLoading = false;
-          aIn.data.imgDesc = this.imgText
-          ore.isDateG = ""
-          it("close")
-                      this.errorDesc = dataUpdate.data.text;
-          oading = false;
-                      }catch(err){
-              rr;
-                ;
-                                                elete"){
-                                 _id,
-                                 
-                ata.isCheck,
-                
-                                                            await axios.put("http://localhost:3000/updateMachine", payload);
-              pdate ==> ",dataUpdate.data)
-                rror === false){
-                a.text);
-                se;
-                Desc = this.imgText
-                = ""
-                                                 aUpdate.data.text;
-                se;
-                                              rr;
-              = false ;
-                              = "uncheck"){
-                              _id,
-                data.isDelete, 
-                 
-                                
-                                                                 it axios.put("http://localhost:3000/updateMachine", payload);
-                e ==> ",dataUpdate.data)
-                .isError === false){
-              .data.text);
-            n g = fal se;
-               .imgDesc = this.imgText
-              teG = ""
-                                                aUpdate.data.text;
-                se;
-                                                                 ;
-                                                                                                        (){
-          false
-                              ""
-           false
-          = false
-        D esc  = ""
-          false
-          = ""
-        ("close")
-                                 mDelete(selectionIn){
-        onfirm = true;
-      ectionIn === 'delete'){
-    // console.log(selectionIn)
+            this.dataIn.data.imgDesc = this.imgText
+            this.$store.isDateG = ""
+            this.$emit("close")
+          }else{
+            this.errorDesc = dataUpdate.data.text;
+            this.isLoading = false;
+          }
+        }catch(err){
+          this.errorDesc = err;
+          this.isLoading = false;
+        }
+
+      }else if(updateType === "delete"){
+        const payload = {
+          _id: this.dataIn.data._id,
+          isDelete: true, 
+          imgDesc: this.imgText, 
+          isCheck: this.dataIn.data.isCheck,
+          updateType: updateType
+        }
+
+        try{
+          const dataUpdate = await axios.put("http://localhost:3000/updateMachine", payload);
+          console.log("dataUpdate ==> ",dataUpdate.data)
+          if(dataUpdate.data.isError === false){
+            alert(dataUpdate.data.text);
+            this.isLoading = false;
+            this.dataIn.data.imgDesc = this.imgText
+            this.$store.isDateG = ""
+            this.$emit("close")
+          }else{
+            this.errorDesc = dataUpdate.data.text;
+            this.isLoading = false;
+          }
+        }catch(err){
+          this.errorDesc = err;
+          this.isLoading = false;
+        }
+      }else if(updateType === "uncheck"){
+        const payload = {
+          _id: this.dataIn.data._id,
+          isDelete: this.dataIn.data.isDelete, 
+          imgDesc: this.imgText, 
+          isCheck: false,
+          updateType: updateType
+        }
+
+        try{
+          const dataUpdate = await axios.put("http://localhost:3000/updateMachine", payload);
+          console.log("dataUpdate ==> ",dataUpdate.data)
+          if(dataUpdate.data.isError === false){
+            alert(dataUpdate.data.text);
+            this.isLoading = false;
+            this.dataIn.data.imgDesc = this.imgText
+            this.$store.isDateG = ""
+            this.$emit("close")
+          }else{
+            this.errorDesc = dataUpdate.data.text;
+            this.isLoading = false;
+          }
+        }catch(err){
+          this.errorDesc = err;
+          this.isLoading = false;
+        }
+      }
+
+      
+      
+    },
+
+    haddleCancelEdit(){
+      this.isEdit = false
+    },
+
+    haddleExit(){
+      this.isDesc = ""
+      this.isCheck = false
+      this.isDelete = false
+      this.errorDesc = ""
+      this.isEdit = false
+      this.textDesc = ""
+      this.$emit("close")
+    },
+
+    
+
+    haddleConfirmDelete(selectionIn){
+      this.showConfirm = true;
+      if(selectionIn === 'delete'){
+        // console.log(selectionIn)
         this.haddleSaveEdit('delete')
-    lse if(selection In === 'cancel'){
-      .showConfirm = false;
-                                
-    onsole.log("this.dataIn ==> ",this.dataIn);
+      }else if(selectionIn === 'cancel'){
+        this.showConfirm = false;
+      }
+    },
+  },
+  mounted(){
+    // console.log("this.dataIn ==> ",this.dataIn);
     // this.textDesc =  this.dataIn.data.imgDesc
-           
-      tex tDesc =  this.dataIn.data.imgDesc
+  },
+  updated(){
+    // this.textDesc =  this.dataIn.data.imgDesc
   }
-                  </script>
+ 
+}
+</script>
 
 <template>
   <Transition name="modal">
@@ -147,9 +212,7 @@ export default {
           <button class="btn-cancel-delete" @click="haddleConfirmDelete('cancel')">Cancel</button>
         </div>
       </div>
-      <div class="on-loading" v-if="isLoading === true">
-        <h1>Loading...</h1>
-      </div>
+    <div class="on-loading" v-if="isLoading === true"><h1>Loading...</h1></div>
       <div class="modal-wrapper">
         <div class="modal-container">
           <div class="modal-header">
@@ -160,33 +223,31 @@ export default {
           <div class="modal-body">
             <div class="body-content">
               <img :src="this.dataIn.data.img" height="450" width="450" />
-              <div class="setting-content-text">
+              <div class="setting-content-text" >
                 <h6>
                   Description
                 </h6>
 
-                <div class="text-container" v-if="errorDesc === ''">
-                  <p v-if="!isEdit">
-                    {{dataIn.data.imgDesc}}
-                  </p>
-                  <div v-if="isEdit">
-                    <textarea class="textarea-desc" v-model="imgText"></textarea>
+                  <div class="text-container" v-if="errorDesc === ''" >
+                    <p v-if="!isEdit">
+                      {{dataIn.data.imgDesc}}
+                    </p>
+                    <div v-if="isEdit" >
+                      <textarea class="textarea-desc" v-model="imgText"></textarea>
+                    </div>
                   </div>
-                </div>
-
-                <div class="text-container" v-if="errorDesc !== ''">
-                  <h1 class="error-desc">{{errorDesc}}</h1>
-                </div>
+                
+                  <div  class="text-container" v-if="errorDesc !== ''">
+                      <h1 class="error-desc">{{errorDesc}}</h1>
+                  </div>
               </div>
             </div>
           </div>
 
           <div class="modal-footer">
             <slot name="footer">
-              <button class="modal-check-button" v-if="!(isEdit) && dataIn.checking === false"
-                @click="haddleSaveEdit('check')">Check</button>
-              <button class="modal-uncheck-button" v-if="dataIn.checking === true"
-                @click="haddleSaveEdit('uncheck')">Uncheck</button>
+              <button class="modal-check-button" v-if="!(isEdit) && dataIn.checking === false" @click="haddleSaveEdit('check')">Check</button>
+              <button class="modal-uncheck-button" v-if="dataIn.checking === true" @click="haddleSaveEdit('uncheck')">Uncheck</button>
               <button class="modal-save-button" v-if="!isEdit" @click="haddleEdit">Edit</button>
               <button class="btn-save-edit" v-if="isEdit" @click="haddleSaveEdit('text')">Save</button>
               <button class="modal-delete-button" v-if="isEdit" @click="haddleCancelEdit">Cancel</button>
@@ -200,7 +261,7 @@ export default {
 </template>
 
 <style  scoped>
-.btn-confirm-delete {
+.btn-confirm-delete{
   margin-right: 30px;
   border: none;
   background: rgb(234, 155, 155);
@@ -209,7 +270,7 @@ export default {
   border-radius: 30px;
 }
 
-.btn-cancel-delete {
+.btn-cancel-delete{
   margin-left: 30px;
   border: none;
   background: rgb(181, 234, 155);
@@ -217,23 +278,19 @@ export default {
   width: 100px;
   border-radius: 30px;
 }
-
-.haddle-btn-confirm {
+.haddle-btn-confirm{
   margin-top: 20vh;
   text-align: center;
 }
-
-.description-delete {
+.description-delete{
   text-align: center;
   margin-top: 100px;
 }
-
-.confirm-delete {
+.confirm-delete{
   position: fixed;
   width: 700px;
   height: 500px;
-  margin: 5% auto;
-  /* Will not center vertically and won't work in IE6/7. */
+  margin: 5% auto; /* Will not center vertically and won't work in IE6/7. */
   left: 0;
   right: 0;
   background: #fcfcfc;
@@ -243,29 +300,27 @@ export default {
   margin-top: 50vh; */
   z-index: 999;
 }
-
-.on-loading {
-  position: fixed;
-  text-align: center;
-  background-color: rgb(199, 199, 199);
-  width: 100%;
-  height: 100%;
-  opacity: 0.7;
-  z-index: 999;
-  left: 0;
-  top: 0;
+.on-loading{
+    position: fixed;
+    text-align: center;
+    background-color: rgb(199, 199, 199);
+    width: 100%;
+    height: 100%;
+    opacity: 0.7;
+    z-index: 999;
+    left: 0;
+    top: 0;
 }
 
-.on-loading>h1 {
-  margin-top: 25%;
+.on-loading > h1{
+    margin-top: 25%;
 }
 
-.error-desc {
+.error-desc{
   text-align: center;
   margin-top: 10%;
   color: red;
 }
-
 .modal-mask {
   position: fixed;
   z-index: 9998;
@@ -301,10 +356,10 @@ export default {
   margin: 20px 0;
 }
 
+ 
 
-
-.body-content {
-  display: flex;
+.body-content{
+  display:flex;
   justify-content: space-between;
 }
 
@@ -322,20 +377,20 @@ export default {
   transform: scale(1.1);
 }
 
-.setting-content-text {
+.setting-content-text{
   width: 55%;
 }
 
-.setting-content-text>h6 {
+.setting-content-text > h6{
   margin-left: 10px;
 }
 
-.modal-footer {
-  display: flex;
+.modal-footer{
+  display:flex;
   justify-content: flex-end;
 }
 
-.modal-delete-button {
+.modal-delete-button{
   width: 120px;
   border: 1px solid #F47D7D;
   border-radius: 5px;
@@ -343,7 +398,7 @@ export default {
   color: whitesmoke;
 }
 
-.modal-save-button {
+.modal-save-button{
   width: 120px;
   border: 1px solid #F4E27D;
   border-radius: 5px;
@@ -351,7 +406,7 @@ export default {
   color: whitesmoke;
 }
 
-.modal-check-button {
+.modal-check-button{
   width: 120px;
   border: 1px solid #ABE88E;
   border-radius: 5px;
@@ -359,7 +414,7 @@ export default {
   color: whitesmoke;
 }
 
-.modal-uncheck-button {
+.modal-uncheck-button{
   width: 120px;
   border: 1px solid #ec4949;
   border-radius: 5px;
@@ -367,21 +422,21 @@ export default {
   color: whitesmoke;
 }
 
-.text-container {
+.text-container{
   margin-left: 20px;
 }
 
-.textarea-desc {
+.textarea-desc{
   width: 90%;
   height: 350px;
 }
 
-.btn-edit-container {
+.btn-edit-container{
   text-align: right;
   margin-top: 10px;
 }
 
-.btn-save-edit {
+.btn-save-edit{
   width: 120px;
   border: 1px solid #ABE88E;
   border-radius: 5px;
@@ -389,7 +444,7 @@ export default {
   color: whitesmoke;
 }
 
-.btn-close-modal {
+.btn-close-modal{
   border: none;
   border-radius: 50%;
   background-color: rgb(217, 217, 217);

@@ -5,7 +5,7 @@ export default {
     data(){
         return{
             // debug login // 
-            isU sername: "",
+            isUsername: "",
             isPassword: "",
             ErrorText: ""
         }
@@ -20,16 +20,16 @@ export default {
                     password: this.isPassword
                 }
 
-                 con st isUserProfile = await axios.post("http://localhost:3000/haddlelogin",payload);
+                 const isUserProfile = await axios.post("http://localhost:3000/haddlelogin",payload);
 
-                if(isUse rProfile.data.isError === false){
-                    thi s.ErrorText = "";  
+                if(isUserProfile.data.isError === false){
+                    this.ErrorText = "";  
                      this.$cookies.set('userDam',isUserProfile.data.userData.username); 
                      this.$cookies.set("DamToken", isUserProfile.data.userData.isToken);
                     this .$cookies.set("DamType", isUserProfile.data.userData.userType);
                      this.$outer.push("/verify");
                 }else{
-                    th is.ErrorText = isUserProfile.data.text
+                    this.ErrorText = isUserProfile.data.text
                 }
             }catch(err){
                 this.ErrorText = "Cannot connect to backend."
