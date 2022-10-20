@@ -19,8 +19,12 @@ const upload = require("./middleware/uploadMiddleware");
 const auth = require("./middleware/auth");
 
 const app = express();
+corsOptions = {
+  origin: ["http://localhost:8080", "http://http://128.199.179.43:8080"],
+  credentials: true,
+}
 app.use(express.json());
-app.use(cors());
+app.use(cors(corsOptions));
 
 // convert int to byte value //
 const formatBytes = (bytes, decimals = 2) => {
