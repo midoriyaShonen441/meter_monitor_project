@@ -33,7 +33,8 @@ export default {
             filterBtn: "img",
             isLoading: true,
             errorDesc: "",
-            isChecking: false
+            isChecking: false,
+            findType: true
         }
     },
     methods: {
@@ -64,6 +65,53 @@ export default {
             this.showModal = true;
 
 
+        },
+
+        btnChangeSerach(evt){
+            if(evt === true){
+                this.findType = true
+            }else{
+                this.findType = false
+                this.fetchMeter()
+            }
+        },
+
+        async fetchMeter(){
+            this.imgData = []
+
+
+            const day = this.date.getDate();
+            const month = this.date.getMonth() + 1;
+            const year = this.date.getFullYear();
+
+            this.isDate = `${year}-${month}-${day}`;
+            this.$store.isDateG = this.isDate;
+            // console.log("this.$store.isDateG  ===> ", this.$store.isDateG)
+            this.storeDate = this.isDate;
+            this.dateShow = `${day}/${month}/${year}`
+
+            
+
+            try{
+                const payload = {
+                    dateIn: this.isDate
+                }
+
+                const gettingImgData = await axios.post("http://localhost:3000/fetchimg", payload);
+                // console.log(gettingImgData.data.listData.length)
+                let setMeterId = []
+                for(let i = 0; i < gettingImgData.data.listData.length;i++){
+                    console.log(gettingImgData.data.listData[i].meterId)
+                    // const set_id = gettingImgData.data.listData[i].meterId
+                    setMeterId.push(gettingImgData.data.listData[i].meterId)
+                }
+                setMeterId = [... new Set(setMeterId)]
+                console.log(setMeterId)
+
+
+            }catch(err){
+                console.log(err)
+            }
         },
 
         async fetchImageData() {
@@ -167,6 +215,7 @@ export default {
                     this.imgData.push(zone2);
                     this.imgData.push(zone3);
                     this.imgData.push(zone4);
+                    // console.log(this.imgData)
                     this.isLoading = false;
 
                     // console.log(this.imgDataTest)
@@ -266,6 +315,14 @@ export default {
         </div>
         <div class="verify-container">
             <div class="filter-container">
+                <div class="set-search-type">
+                    <div>
+                        <button class="btn-find-switch" @click="btnChangeSerach(true)">ค้นหาโดยวันที่</button>
+                    </div>
+                    <div>
+                        <button class="btn-find-switch" @click="btnChangeSerach(false)">ค้นหาโดยมิตเตอร์</button>
+                    </div>
+                </div>
                 <div class="title-username">
                     <h4>user: {{userId}}</h4>
                 </div>
@@ -283,7 +340,7 @@ export default {
                 </div>
 
             </div>
-            <div class="collection-container">
+            <div class="collection-container" v-if="findType === true">
                 <div class="set-title-content">
                     <div class="set-container-content">
                         <h3 style="color: #9A9A9A">ผลการตรวจสอบประจำวันที่ {{dateShow}}</h3>
@@ -629,5 +686,35 @@ td {
     background-color: rgb(60, 60, 60);
     height: 150px;
     z-index: 40;
+}
+
+.set-search-type{
+    display: flex;
+    justify-content: space-around;
+}
+
+.set-search-type{
+    width: 80%;
+    margin: auto;
+}
+
+.btn-find-switch{
+    width: 180px;
+    height: 60px;
+    border-radius: 10px;
+    border: 1px solid grey;
+    font-size: 18px;
+    margin-bottom: 40px;
+}
+
+.btn-find-switch:hover{
+    background-color: rgb(109, 109, 109);
+    color: white;
+}
+
+.btn-find-switch:active{
+    background-color: rgb(109, 109, 109);
+    color: white;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
 }
 </style>
