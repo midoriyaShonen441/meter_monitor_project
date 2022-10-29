@@ -34,7 +34,9 @@ export default {
             isLoading: true,
             errorDesc: "",
             isChecking: false,
-            findType: true
+            findType: true,
+            arrayMeter: null,
+            uniqueMeter: [],
         }
     },
     methods: {
@@ -43,6 +45,7 @@ export default {
             // console.log("edit");
             this.$router.push("/updateprofile");
         },
+
         btnSwitch() {
             if (this.filterBtn === "img") {
                 this.filterBtn = "list"
@@ -50,6 +53,7 @@ export default {
                 this.filterBtn = "img"
             }
         },
+
         settingModal(menuIn) {
             // console.log("menuIn ==> ",menuIn)
             this.setObject = {
@@ -63,8 +67,6 @@ export default {
             }
             this.isChecking = menuIn.isCheck;
             this.showModal = true;
-
-
         },
 
         btnChangeSerach(evt){
@@ -76,10 +78,12 @@ export default {
             }
         },
 
+        distinctMeterId(value, index, seft){
+            return seft.indexOf(value) === index
+        },
+
         async fetchMeter(){
             this.imgData = []
-
-
             const day = this.date.getDate();
             const month = this.date.getMonth() + 1;
             const year = this.date.getFullYear();
@@ -90,24 +94,26 @@ export default {
             this.storeDate = this.isDate;
             this.dateShow = `${day}/${month}/${year}`
 
-            
-
+        
             try{
                 const payload = {
                     dateIn: this.isDate
                 }
 
                 const gettingImgData = await axios.post("http://localhost:3000/fetchimg", payload);
-                // console.log(gettingImgData.data.listData.length)
+                this.arrayMeter = gettingImgData.data.listData
+                console.log(this.arrayMeter )
                 let setMeterId = []
                 for(let i = 0; i < gettingImgData.data.listData.length;i++){
-                    console.log(gettingImgData.data.listData[i].meterId)
+                    // console.log(gettingImgData.data.listData[i].meterId)
                     // const set_id = gettingImgData.data.listData[i].meterId
+                    // this.arrayMeter.push(gettingImgData.data.listData[i])
                     setMeterId.push(gettingImgData.data.listData[i].meterId)
                 }
-                setMeterId = [... new Set(setMeterId)]
-                console.log(setMeterId)
 
+                // console.log(setMeterId)                
+                this.uniqueMeter= setMeterId.filter(this.distinctMeterId)
+ 
 
             }catch(err){
                 console.log(err)
@@ -317,7 +323,7 @@ export default {
             <div class="filter-container">
                 <div class="set-search-type">
                     <div>
-                        <button class="btn-find-switch" @click="btnChangeSerach(true)">ค้นหาโดยวันที่</button>
+                        <button class="btn-find-switch" @click="btnChangeSerach(true)">ค้นหาโดยโซน์</button>
                     </div>
                     <div>
                         <button class="btn-find-switch" @click="btnChangeSerach(false)">ค้นหาโดยมิตเตอร์</button>
@@ -341,9 +347,10 @@ export default {
 
             </div>
             <div class="collection-container" v-if="findType === true">
+                
                 <div class="set-title-content">
                     <div class="set-container-content">
-                        <h3 style="color: #9A9A9A">ผลการตรวจสอบประจำวันที่ {{dateShow}}</h3>
+                        <h3 style="color: #9A9A9A">ค้นหาโดยโซน ผลการตรวจสอบประจำวันที่ {{dateShow}}</h3>
                         <div class="set-from-icon">
                             <button class="on-click-menu" @click="btnSwitch">
                                 <img src="./icons/photo.png" height="20" width="20">
@@ -355,8 +362,6 @@ export default {
                     </div>
                     <hr />
                 </div>
-
-
                 <div class="content-container" v-if="filterBtn === 'img'">
                     <div class="img-data-container" v-for="(isdata, index1) in imgData" :key="index1">
                         <h4 class="title-container">
@@ -388,8 +393,6 @@ export default {
                         </div>
                     </div>
                 </div>
-
-
                 <div class="content-container" v-if="filterBtn === 'list'">
                     <div class="img-data-container" v-for="(isdata, index1) in imgData" :key="index1">
                         <h4 class="title-container">
@@ -440,7 +443,25 @@ export default {
                     </div>
                 </div>
 
+            </div>
 
+            <div  class="collection-container" v-if="findType === false">
+                <div class="set-container-content">
+                    <h3 style="color: #9A9A9A">ค้นหาโดยมิเตอร์ ผลการตรวจสอบประจำวันที่ {{dateShow}}</h3>
+                </div>
+                <hr />
+                <div class="content-container">
+                    <div class="set-meter-container" v-for="(setMeter, indexSet) in uniqueMeter" :key="indexSet">
+                        <div class="meter-title">
+                            <h5>Meter id: {{setMeter}}</h5>
+                        </div>
+                        <div class="meter-data-container" v-for="(meterId, indexId) in arrayMeter" :key="indexId">
+                            <div class="meter-detail" v-if="setMeter === meterId.meterId">
+                                {{meterId.filename}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="adding-footer">
@@ -716,5 +737,11 @@ td {
     background-color: rgb(109, 109, 109);
     color: white;
     box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
+}
+
+.set-meter-container{
+    width: 98%;
+    margin: auto;
+    border: 1px solid red;
 }
 </style>
