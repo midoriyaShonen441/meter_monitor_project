@@ -166,8 +166,8 @@ export default {
                 const payload = {
                     dateIn: this.isDate
                 }
-                const gettingImgData = await axios.post("http://localhost:3000/fetchimg", payload);
-
+                const gettingImgData = await axios.post("http://localhost/backend/fetchimg", payload);
+                // this.arrayMeter = gettingImgData.data.listData
                 console.log(this.arrayMeter)
                 let setMeterId = []
                 let setMeterZoneId = []
@@ -219,8 +219,8 @@ export default {
                     dateIn: this.isDate
                 }
 
-                const gettingImgData = await axios.post("http://localhost:3000/fetchimg", payload);
-                
+                const gettingImgData = await axios.post("http://localhost/backend/fetchimg", payload);
+                // console.log(gettingImgData.data)
                 if (gettingImgData.data.isError === false) {
                     this.isDateBase = gettingImgData.data.isDate
 
@@ -323,7 +323,7 @@ export default {
 
                 const isCheckAuth = await axios({
                     method: "GET",
-                    url: "http://localhost:3000/checkingauth",
+                    url: "http://localhost/backend/checkingauth",
                     headers: {
                         'Content-Type': 'application/json',
                         'access-token': this.$cookies.get("DamToken")

@@ -70,6 +70,28 @@ services:
       - /etc/timezone:/etc/timezone:ro
     networks:
       - bridge
+    
+  nginx:
+    container_name: nginx
+    build: 
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - frontend
+      - backend
+      - db
+    volumes:
+      - ./certbot/www:/var/www/certbot:ro
+      - ./certbot/conf:/etc/nginx/ssl:ro
+      - ./certbot/dhparam:/etc/nginx/dhparam:ro
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    networks:
+      - bridge
+    
 
   mongo-seed:
     image: mongo_seed
