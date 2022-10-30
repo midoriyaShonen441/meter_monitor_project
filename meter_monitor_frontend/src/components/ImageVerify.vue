@@ -37,7 +37,13 @@ export default {
             findType: true,
             arrayMeter: [],
             uniqueMeter: [],
-            cssMeterIsCheck: "card-meter"
+            meterZone: [],
+            cssMeterIsCheck: "card-meter",
+            listAllMeter:null,
+            backupListAllMeter:null,
+            findMeterId: "",
+            findZoneId:"",
+            // setReloadCn: false,
         }
     },
     methods: {
@@ -71,12 +77,15 @@ export default {
         },
 
         btnChangeSerach(evt){
-            if(evt === true){
-                this.findType = true
+            if(evt === 'zone'){
+                this.findType = 'zone'
                 this.fetchImageData()
-            }else{
-                this.findType = false
+            }else if(evt === 'meter'){
+                this.findType = 'meter'
                 this.fetchMeter()
+            }else if(evt === 'all'){
+                this.findType= 'all'
+                this.findAllMeter()
             }
         },
 
@@ -84,32 +93,90 @@ export default {
             return seft.indexOf(value) === index
         },
 
+
+
+        haddleFinder(evt){
+            if(evt === 'reset'){
+                this.listAllMeter = this.backupListAllMeter;
+            }else{
+                if(this.findMeterId === ""){
+                this.listAllMeter = this.backupListAllMeter;
+                this.findMeterId = ""
+                // this.$forceUpdate();
+                // this.setReloadCn = false
+                }else{
+                this.listAllMeter = this.backupListAllMeter;
+                let setListMeterData = []
+                this.listAllMeter.forEach(element => {
+                    if(element.meterId === this.findMeterId){
+                        setListMeterData.push(element)
+                    }
+                })
+                this.listAllMeter = setListMeterData;
+                this.findMeterId = ""
+                // this.$forceUpdate();
+                // this.setReloadCn = false
+                }
+            }
+
+            
+        },
+
+        async findAllMeter(){
+            try{
+                const allMeterData = await axios.get("http://localhost:3000/fetchAll");
+                let setData = []
+                for(let i = 0; i < allMeterData.data.length;i++){
+                    const settingData = {
+                                _id: allMeterData.data[i]._id,
+                                dateString: allMeterData.data[i].dateString,
+                                date: allMeterData.data[i].date.slice(11, 16),
+                                filename: allMeterData.data[i].filename,
+                                size: allMeterData.data[i].size,
+                                meterId: allMeterData.data[i].meterId,
+                                zoneId: allMeterData.data[i].zoneId,
+                                isDelete: allMeterData.data[i].isDelete,
+                                isCheck: allMeterData.data[i].isCheck,
+                                imgDesc: allMeterData.data[i].imgDesc,
+                                img: "data:image/png;base64, " + allMeterData.data[i].image
+                            }
+                    setData.push(settingData)
+                } 
+                this.listAllMeter = setData;
+                this.backupListAllMeter = setData;
+            }catch(err){
+                console.log(err);
+            }       
+        },  
+
+        
+
         async fetchMeter(){
+
             this.imgData = []
             const day = this.date.getDate();
             const month = this.date.getMonth() + 1;
             const year = this.date.getFullYear();
-
             this.isDate = `${year}-${month}-${day}`;
             this.$store.isDateG = this.isDate;
-            // console.log("this.$store.isDateG  ===> ", this.$store.isDateG)
             this.storeDate = this.isDate;
             this.dateShow = `${day}/${month}/${year}`
 
-        
             try{
                 const payload = {
                     dateIn: this.isDate
                 }
                 const gettingImgData = await axios.post("http://localhost:3000/fetchimg", payload);
-                // this.arrayMeter = gettingImgData.data.listData
+
                 console.log(this.arrayMeter)
                 let setMeterId = []
+                let setMeterZoneId = []
                 for(let i = 0; i < gettingImgData.data.listData.length;i++){
                     console.log(gettingImgData.data.listData[i])
                     const settingData = {
                                 _id: gettingImgData.data.listData[i]._id,
                                 dateString: gettingImgData.data.listData[i].dateString,
+                                date: gettingImgData.data.listData[i].date.slice(11, 16),
                                 filename: gettingImgData.data.listData[i].filename,
                                 size: gettingImgData.data.listData[i].size,
                                 meterId: gettingImgData.data.listData[i].meterId,
@@ -120,10 +187,12 @@ export default {
                                 img: "data:image/png;base64, " + gettingImgData.data.listData[i].image
                             }
                     this.arrayMeter.push(settingData)
+                    setMeterZoneId.push(gettingImgData.data.listData[i].zoneId)
                     setMeterId.push(gettingImgData.data.listData[i].meterId)
-                }
-                // console.log(setMeterId)          
+                }   
+                this.meterZone = setMeterZoneId.filter(this.distinctMeterId)
                 this.uniqueMeter= setMeterId.filter(this.distinctMeterId)
+                console.log("zone",this.meterZone)
             }catch(err){
                 console.log(err)
             }
@@ -139,11 +208,10 @@ export default {
 
             this.isDate = `${year}-${month}-${day}`;
             this.$store.isDateG = this.isDate;
-            // console.log("this.$store.isDateG  ===> ", this.$store.isDateG)
+
             this.storeDate = this.isDate;
             this.dateShow = `${day}/${month}/${year}`
 
-            // console.log(payload)
             try {
 
 
@@ -152,7 +220,7 @@ export default {
                 }
 
                 const gettingImgData = await axios.post("http://localhost:3000/fetchimg", payload);
-                // console.log(gettingImgData.data)
+                
                 if (gettingImgData.data.isError === false) {
                     this.isDateBase = gettingImgData.data.isDate
 
@@ -163,10 +231,10 @@ export default {
 
                     gettingImgData.data.listData.forEach(element => {
                         if (element.zoneId === '1') {
-
                             const settingData = {
                                 _id: element._id,
                                 dateString: element.dateString,
+                                date: element.date.slice(11, 16),
                                 filename: element.filename,
                                 size: element.size,
                                 meterId: element.meterId,
@@ -178,10 +246,10 @@ export default {
                             }
                             zone1.push(settingData)
                         } else if (element.zoneId === '2') {
-                            // this.imgDataTest.push("data:image/png;base64, "+element.image)
                             const settingData = {
                                 _id: element._id,
                                 dateString: element.dateString,
+                                date: element.date.slice(11, 16),
                                 filename: element.filename,
                                 size: element.size,
                                 meterId: element.meterId,
@@ -193,11 +261,10 @@ export default {
                             }
                             zone2.push(settingData)
                         } else if (element.zoneId === '3') {
-                            // console.log("zone 3 ==>",element)
-                            // this.imgDataTest.push("data:image/png;base64, "+element.image)
                             const settingData = {
                                 _id: element._id,
                                 dateString: element.dateString,
+                                date: element.date.slice(11, 16),
                                 filename: element.filename,
                                 size: element.size,
                                 meterId: element.meterId,
@@ -209,10 +276,10 @@ export default {
                             }
                             zone3.push(settingData)
                         } else if (element.zoneId === '4') {
-                            // this.imgDataTest.push("data:image/png;base64, "+element.image)
                             const settingData = {
                                 _id: element._id,
                                 dateString: element.dateString,
+                                date: element.date.slice(11, 16),
                                 filename: element.filename,
                                 size: element.size,
                                 meterId: element.meterId,
@@ -225,22 +292,16 @@ export default {
                             zone4.push(settingData)
                         }
                     });
-                    // this.imgData.push(warping);
                     this.imgData.push(zone1);
                     this.imgData.push(zone2);
                     this.imgData.push(zone3);
                     this.imgData.push(zone4);
-                    // console.log(this.imgData)
                     this.isLoading = false;
 
-                    // console.log(this.imgDataTest)
-                    // console.log("data ===> ",this.imgData);
                 } else {
                     this.isLoading = false;
                     this.errorDesc = gettingImgData.data.text
                 }
-                // console.log("gettingImgData.data", gettingImgData.data)
-
             } catch (err) {
                 console.log(err);
                 this.isLoading = false;
@@ -268,8 +329,6 @@ export default {
                         'access-token': this.$cookies.get("DamToken")
                     }
                 });
-
-                // console.log(isCheckAuth);
 
                 if (isCheckAuth.data.text !== "ok") {
                     this.$cookies.remove("userDam");
@@ -302,6 +361,10 @@ export default {
     },
     mounted() {
         this.funcGetCookies();
+        // this.haddleFinder();
+        // if(this.setReloadCn === true){
+        //     this.haddleFinder()
+        // }
     },
     updated() {
         const day = this.date.getDate();
@@ -315,6 +378,11 @@ export default {
             this.isLoading = true;
             this.fetchImageData();
         }
+
+        
+        
+
+        
     }
 }
 
@@ -332,10 +400,13 @@ export default {
             <div class="filter-container">
                 <div class="set-search-type">
                     <div>
-                        <button class="btn-find-switch" @click="btnChangeSerach(true)">ค้นหาโดยโซน์</button>
+                        <button class="btn-find-switch" @click="btnChangeSerach('zone')">ค้นหาโดยโซน</button>
                     </div>
                     <div>
-                        <button class="btn-find-switch" @click="btnChangeSerach(false)">ค้นหาโดยมิตเตอร์</button>
+                        <button class="btn-find-switch" @click="btnChangeSerach('meter')">ค้นหาโดยมิตเตอร์</button>
+                    </div>
+                    <div>
+                        <button class="btn-find-switch" @click="btnChangeSerach('all')">ดูมิตเตอร์ทั้งหมด</button>
                     </div>
                 </div>
                 <div class="title-username">
@@ -355,7 +426,7 @@ export default {
                 </div>
 
             </div>
-            <div class="collection-container" v-if="findType === true">
+            <div class="collection-container" v-if="findType === 'zone'">
                 
                 <div class="set-title-content">
                     <div class="set-container-content">
@@ -418,6 +489,7 @@ export default {
                                                 <th>สถานะ</th>
                                                 <th>ชื่อไฟล์</th>
                                                 <th>วันที่</th>
+                                                <th>เวลา</th>
                                                 <th>ขนาดไฟล์</th>
                                             </tr>
                                             <tr class="setting-row" v-for="(isdata2, index2) in isdata" :key="index2"
@@ -433,6 +505,7 @@ export default {
                                                 </td>
                                                 <td>{{isdata2.filename}}</td>
                                                 <td>{{isdata2.dateString}}</td>
+                                                <td>{{isdata2.date}}</td>
                                                 <td>{{isdata2.size}}</td>
                                             </tr>
                                         </table>
@@ -454,7 +527,7 @@ export default {
 
             </div>
 
-            <div  class="collection-container" v-if="findType === false">
+            <div  class="collection-container" v-if="findType === 'meter'">
                 <div class="set-container-content">
                     <h3 style="color: #9A9A9A">ค้นหาโดยมิเตอร์ ผลการตรวจสอบประจำวันที่ {{dateShow}}</h3>
                 </div>
@@ -466,7 +539,7 @@ export default {
                         </div>
                         <div class="set-meter-detail-container">
                             <div class="meter-detail"  v-for="(meterId, indexId) in arrayMeter" :key="indexId">
-                              
+                               
                                     <div class="card-meter" v-if="setMeter === meterId.meterId">
                                         <div class="card-img">
                                             <img height="150" width="150" :src="meterId.img" />
@@ -474,12 +547,14 @@ export default {
                                         <div class="card-desc">
                                             <div class="card-desc-label">
                                                 <div>วันที่บันทึก</div>
+                                                <div>วันที่เวลาที่บันทึก</div>
                                                 <div>ชื่อไฟล์</div>
                                                 <div> โซน/พื้นที่</div>
                                                 <div>สถานะการยืนยัน</div>
                                             </div>
                                             <div class="card-desc-text">
                                                 <div>{{meterId.dateString}}</div>
+                                                <div>{{meterId.date}}</div>
                                                 <div>{{meterId.filename}}</div>
                                                 <div>{{meterId.zoneId}}</div>
                                                 <div v-if="meterId.isCheck === false" style="color: rgb(141, 18, 18); font-size: 18px; font-weight: bold;">ยังไม่ได้ยืนยัน</div>
@@ -507,13 +582,47 @@ export default {
                                             </div>
                                         </div>
                                     </div> 
-
- 
-                                
-                                
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <div  class="collection-container" v-if="findType === 'all'">
+                <div class="set-container-content">
+                    <h3 style="color: #9A9A9A">ค้นหามิเตอร์ทั้งหมด</h3>
+                </div>
+                <div class="filter-container-set">
+                    <input class="set-finder" v-model="findMeterId" placeholder="เลขมิเตอร์" />
+                    <button class="btn-finder" style="margin-right: 10px;" @click="haddleFinder">ค้นหา</button>
+                    <button class="btn-finder" @click="haddleFinder('reset')">คืนค้า</button>
+                </div>
+                <hr />
+                <div class="content-container">
+                    <table>
+                        <tr>
+                            <th>รูป</th>
+                            <th>มิเตอร์</th>
+                            <th>โซน</th>
+                            <th>ชื่อไฟล์</th>
+                            <th>วันที่ที่บันทึก</th>
+                            <th>เวลาที่บันทึก</th>
+                            <th>สถานะการยืนยัน</th>
+                            <th>ขนาดไฟล์</th>
+                            <th>รายละเอียด</th>
+                        </tr>
+                        <tr v-for="(data ,index) in listAllMeter" :key="index">
+                            <td> <img height="100" width="100" :src="data.img" /></td>
+                            <td>{{data.meterId}}</td>
+                            <td>{{data.zoneId}}</td>
+                            <td>{{data.filename}}</td>
+                            <td>{{data.dateString}}</td>
+                            <td>{{data.date}}</td>
+                            <td>{{data.isCheck}}</td>
+                            <td>{{data.size}}</td>
+                            <td>{{data.imgDesc}}</td>
+                        </tr>
+                    </table>
                 </div>
             </div>
         </div>
@@ -762,11 +871,7 @@ td {
     z-index: 40;
 }
 
-.set-search-type{
-    display: flex;
-    justify-content: space-around;
-}
-
+ 
 .set-search-type{
     width: 80%;
     margin: auto;
@@ -853,4 +958,35 @@ td {
     color:white;
     box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
 }
+
+.set-finder{
+    margin-left: 20px;
+    margin-right: 20px;
+    width: 300px;
+    height: 50px;
+}
+
+
+.filter-container-set{
+    text-align: left;
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.btn-finder{
+    height: 50px;
+    border: 1px solid rgb(127, 127, 127);
+    border-radius: 10px;
+}
+
+.btn-finder:hover{
+    background-color: rgb(99, 99, 99);
+    color: white;
+}
+
+.btn-finder:active{
+    background-color: rgb(72, 72, 72);
+    color: white;
+}
+
 </style>

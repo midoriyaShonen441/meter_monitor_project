@@ -140,6 +140,22 @@ app.get("/", async (req, res) => {
   res.send("OK");
 });
 
+// get all image //
+
+app.get("/fetchAll", async (req, res) => {
+  try{
+    const dataImgRange = await meterImage.find({});
+    res.send(dataImgRange);
+  }catch(err){
+    console.log("error in api fetchAll: ",err)
+    const payload = {
+      isError: true,
+      text: err
+    }
+    res.send(payload)
+  }
+});
+
 // get image API //
 app.post("/fetchimg", async (req, res) => {
   const { dateIn } = req.body;
