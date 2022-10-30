@@ -35,8 +35,9 @@ export default {
             errorDesc: "",
             isChecking: false,
             findType: true,
-            arrayMeter: null,
+            arrayMeter: [],
             uniqueMeter: [],
+            cssMeterIsCheck: "card-meter"
         }
     },
     methods: {
@@ -55,7 +56,7 @@ export default {
         },
 
         settingModal(menuIn) {
-            // console.log("menuIn ==> ",menuIn)
+            console.log("menuIn ==> ",menuIn)
             this.setObject = {
                 _id: menuIn._id,
                 meterId: menuIn.meterId,
@@ -72,6 +73,7 @@ export default {
         btnChangeSerach(evt){
             if(evt === true){
                 this.findType = true
+                this.fetchImageData()
             }else{
                 this.findType = false
                 this.fetchMeter()
@@ -99,22 +101,29 @@ export default {
                 const payload = {
                     dateIn: this.isDate
                 }
-
                 const gettingImgData = await axios.post("http://localhost:3000/fetchimg", payload);
-                this.arrayMeter = gettingImgData.data.listData
-                console.log(this.arrayMeter )
+                // this.arrayMeter = gettingImgData.data.listData
+                console.log(this.arrayMeter)
                 let setMeterId = []
                 for(let i = 0; i < gettingImgData.data.listData.length;i++){
-                    // console.log(gettingImgData.data.listData[i].meterId)
-                    // const set_id = gettingImgData.data.listData[i].meterId
-                    // this.arrayMeter.push(gettingImgData.data.listData[i])
+                    console.log(gettingImgData.data.listData[i])
+                    const settingData = {
+                                _id: gettingImgData.data.listData[i]._id,
+                                dateString: gettingImgData.data.listData[i].dateString,
+                                filename: gettingImgData.data.listData[i].filename,
+                                size: gettingImgData.data.listData[i].size,
+                                meterId: gettingImgData.data.listData[i].meterId,
+                                zoneId: gettingImgData.data.listData[i].zoneId,
+                                isDelete: gettingImgData.data.listData[i].isDelete,
+                                isCheck: gettingImgData.data.listData[i].isCheck,
+                                imgDesc: gettingImgData.data.listData[i].imgDesc,
+                                img: "data:image/png;base64, " + gettingImgData.data.listData[i].image
+                            }
+                    this.arrayMeter.push(settingData)
                     setMeterId.push(gettingImgData.data.listData[i].meterId)
                 }
-
-                // console.log(setMeterId)                
+                // console.log(setMeterId)          
                 this.uniqueMeter= setMeterId.filter(this.distinctMeterId)
- 
-
             }catch(err){
                 console.log(err)
             }
@@ -414,7 +423,7 @@ export default {
                                             <tr class="setting-row" v-for="(isdata2, index2) in isdata" :key="index2"
                                                 @click="settingModal(isdata2)">
                                                 <td>
-                                                    <img height="30" width="30" :src="isdata2.img" />
+                                                    <img height="30" width="30" :src="'data:image/png;base64, '+isdata2.img" />
                                                 </td>
                                                 <td>
                                                     <span class="status-check"
@@ -455,9 +464,53 @@ export default {
                         <div class="meter-title">
                             <h5>Meter id: {{setMeter}}</h5>
                         </div>
-                        <div class="meter-data-container" v-for="(meterId, indexId) in arrayMeter" :key="indexId">
-                            <div class="meter-detail" v-if="setMeter === meterId.meterId">
-                                {{meterId.filename}}
+                        <div class="set-meter-detail-container">
+                            <div class="meter-detail"  v-for="(meterId, indexId) in arrayMeter" :key="indexId">
+                              
+                                    <div class="card-meter" v-if="setMeter === meterId.meterId">
+                                        <div class="card-img">
+                                            <img height="150" width="150" :src="meterId.img" />
+                                        </div>
+                                        <div class="card-desc">
+                                            <div class="card-desc-label">
+                                                <div>วันที่บันทึก</div>
+                                                <div>ชื่อไฟล์</div>
+                                                <div> โซน/พื้นที่</div>
+                                                <div>สถานะการยืนยัน</div>
+                                            </div>
+                                            <div class="card-desc-text">
+                                                <div>{{meterId.dateString}}</div>
+                                                <div>{{meterId.filename}}</div>
+                                                <div>{{meterId.zoneId}}</div>
+                                                <div v-if="meterId.isCheck === false" style="color: rgb(141, 18, 18); font-size: 18px; font-weight: bold;">ยังไม่ได้ยืนยัน</div>
+                                                <div v-if="meterId.isCheck === true" style="color: rgb(0, 94, 201); font-size: 18px; font-weight: bold;">ยืนยัน</div>
+                                            </div>
+                                            <div class="card-desc-commemt">
+                                                <div class="card-comment-title">
+                                                    <h6>คำอธิบาย</h6>
+                                                </div>
+                                                <div>
+                                                    {{meterId.imgDesc}}
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <button class="card-btn-edit" @click="settingModal(meterId)">แก้ไขข้อมูล</button>
+                                                <Teleport to="body">
+                                                    <modal :dataIn="{show: showModal, data:setObject, checking:isChecking}"
+                                                        @close="showModal = false">
+                                                        <template #header>
+                                                            <h3>Location Zone: {{setObject.zoneId}} with Meter id:
+                                                                {{setObject.meterId}}, </h3>
+                                                        </template>
+                                                    </modal>
+                                                </Teleport>
+                                            </div>
+                                        </div>
+                                    </div> 
+
+ 
+                                
+                                
                             </div>
                         </div>
                     </div>
@@ -740,8 +793,64 @@ td {
 }
 
 .set-meter-container{
-    width: 98%;
+    width: 95%;
     margin: auto;
-    border: 1px solid red;
+    margin-bottom: 30px;
+}
+
+.set-meter-detail-container{
+    max-height: 1000px;
+    overflow-y: scroll;
+    margin-left: 10px;
+    box-shadow: rgba(0, 0, 0, 0.06) 0px 2px 4px 0px inset;
+    border-radius: 10px;
+}
+
+.grid-meter-border{
+    margin-bottom: 10px;
+}
+
+.meter-detail{
+    margin-bottom: 30px;
+}
+
+.card-meter{
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    border-bottom: 1px solid grey;
+    padding-bottom: 30px;
+    padding-top: 30px;
+}   
+
+.card-img{
+    text-align: center;
+}
+
+.card-desc{
+   display: grid;
+   grid-template-columns: 1fr 2fr 2fr 1fr;
+}
+
+.card-desc-commemt{
+    margin-right: 50px;
+}
+
+.card-btn-edit{
+    width: 100px;
+    height: 50px;
+    margin-top: 40px;
+    border-radius: 10px;
+    border: 1px solid gray;
+}
+
+.card-btn-edit:hover{
+    background: rgb(104, 104, 104);
+    color:white;
+}
+
+.card-btn-edit:active{
+    background: rgb(84, 84, 84);
+    color:white;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
 }
 </style>
