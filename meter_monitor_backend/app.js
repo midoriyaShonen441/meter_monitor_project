@@ -20,7 +20,7 @@ const auth = require("./middleware/auth");
 
 const app = express();
 corsOptions = {
-  origin: ["http://localhost:8080", "http://http://128.199.179.43:8080"],
+  origin: ["http://localhost"],
   credentials: true,
 }
 app.use(express.json());
@@ -43,7 +43,7 @@ const formatBytes = (bytes, decimals = 2) => {
 const encryptedRounds = 10;
 
 // checking login  //
-app.get("/checkingauth", auth, async (req, res) => {
+app.get("/backend/checkingauth", auth, async (req, res) => {
   const replyText = {
     isError: false,
     text: "ok",
@@ -52,7 +52,7 @@ app.get("/checkingauth", auth, async (req, res) => {
 });
 
 // user register //
-app.post("/haddleregister", async (req, res) => {
+app.post("/backend/haddleregister", async (req, res) => {
   const { username, password, type } = req.body;
 
   if ((username, password, type)) {
@@ -88,7 +88,7 @@ app.post("/haddleregister", async (req, res) => {
 });
 
 // user login //
-app.post("/haddlelogin", async (req, res) => {
+app.post("/backend/haddlelogin", async (req, res) => {
   const { username, password } = req.body;
 
   if ((username, password)) {
@@ -136,12 +136,12 @@ app.post("/haddlelogin", async (req, res) => {
 });
 
 // writing image to db
-app.get("/", async (req, res) => {
+app.get("/backend", async (req, res) => {
   res.send("OK");
 });
 
 // get image API //
-app.post("/fetchimg", async (req, res) => {
+app.post("/backend/fetchimg", async (req, res) => {
   const { dateIn } = req.body;
 
   try {
@@ -187,7 +187,7 @@ app.post("/fetchimg", async (req, res) => {
 });
 
 // save image API //
-app.post("/image/upload", upload.single("file"), async (req, res) => {
+app.post("/backend/image/upload", upload.single("file"), async (req, res) => {
   const { filename, path, size } = req.file;
   const meterImage = require("./model/meterImage");
   const metadata = filename.slice(0, -4).split("_");
@@ -229,7 +229,7 @@ app.post("/image/upload", upload.single("file"), async (req, res) => {
   fs.unlinkSync(path);
 });
 
-app.put("/updateprofile", async (req, res) => {
+app.put("/backend/updateprofile", async (req, res) => {
   const { username, isPassword } = req.body;
   // console.log(username , isPassword)
   const myquery = { username: username };
@@ -251,7 +251,7 @@ app.put("/updateprofile", async (req, res) => {
   }
 });
 
-app.put("/updateMachine", async (req, res) => {
+app.put("/backend/updateMachine", async (req, res) => {
   const { updateType, isCheck, imgDesc, isDelete, _id } = req.body;
   // console.log(updateType ,isCheck, imgDesc, isDelete, _id)
   const myquery = {

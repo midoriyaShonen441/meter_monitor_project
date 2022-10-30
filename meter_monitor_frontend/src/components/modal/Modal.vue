@@ -60,7 +60,7 @@ export default {
         }
 
         try{
-          const dataUpdate = await axios.put("http://localhost:3000/updateMachine", payload);
+          const dataUpdate = await axios.put("http://localhost/backend/updateMachine", payload);
           // console.log("dataUpdate ==> ",dataUpdate.data)
           if(dataUpdate.data.isError === false){
             alert(dataUpdate.data.text);
@@ -88,7 +88,7 @@ export default {
         }
 
         try{
-          const dataUpdate = await axios.put("http://localhost:3000/updateMachine", payload);
+          const dataUpdate = await axios.put("http://localhost/backend/updateMachine", payload);
           console.log("dataUpdate ==> ",dataUpdate.data)
           if(dataUpdate.data.isError === false){
             alert(dataUpdate.data.text);
@@ -115,7 +115,7 @@ export default {
         }
 
         try{
-          const dataUpdate = await axios.put("http://localhost:3000/updateMachine", payload);
+          const dataUpdate = await axios.put("http://localhost/backend/updateMachine", payload);
           console.log("dataUpdate ==> ",dataUpdate.data)
           if(dataUpdate.data.isError === false){
             alert(dataUpdate.data.text);
@@ -141,7 +141,7 @@ export default {
         }
 
         try{
-          const dataUpdate = await axios.put("http://localhost:3000/updateMachine", payload);
+          const dataUpdate = await axios.put("http://localhost/backend/updateMachine", payload);
           console.log("dataUpdate ==> ",dataUpdate.data)
           if(dataUpdate.data.isError === false){
             alert(dataUpdate.data.text);
