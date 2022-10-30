@@ -9,7 +9,7 @@ class connection:
         self.url = url
 
     async def upload(self, file):
-        url = self.url + "/image/upload"
+        url = self.url + "/backend/image/upload"
         async with aiohttp.ClientSession() as session:
             async with session.post(url, data=file) as res:
                 result = await res.text()
@@ -23,7 +23,7 @@ class connection:
                 print(result)
 
 
-server = connection("http://localhost:3000")
+server = connection("http://128.199.78.224")
 file_path = r"./img/"
 file_names = os.listdir(file_path)
 
