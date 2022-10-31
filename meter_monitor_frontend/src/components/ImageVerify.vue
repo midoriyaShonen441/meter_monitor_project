@@ -124,7 +124,7 @@ export default {
 
         async findAllMeter(){
             try{
-                const allMeterData = await axios.get("http://localhost:3000/fetchAll");
+                const allMeterData = await axios.get("http://localhost/backend/fetchAll");
                 let setData = []
                 for(let i = 0; i < allMeterData.data.length;i++){
                     const settingData = {

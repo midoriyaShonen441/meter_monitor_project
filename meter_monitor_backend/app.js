@@ -142,7 +142,7 @@ app.get("/backend", async (req, res) => {
 
 // get all image //
 
-app.get("/fetchAll", async (req, res) => {
+app.get("/backend/fetchAll", async (req, res) => {
   try{
     const dataImgRange = await meterImage.find({});
     res.send(dataImgRange);
