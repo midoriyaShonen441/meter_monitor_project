@@ -1,9 +1,15 @@
 import cv2
 import numpy as np
 
+import pytz
+import datetime
+
+TZ = pytz.timezone("Asia/Bangkok")
+
 
 def image_capture(img_name, img):
-    cv2.imwrite(img_name + ".png" ,img)
+    date = datetime.datetime.now(TZ)
+    cv2.imwrite(img_name + date + ".png", img)
     print("{} written!".format(img_name))
 
 

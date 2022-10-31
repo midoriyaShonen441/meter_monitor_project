@@ -1,6 +1,13 @@
 // config env and connection database //
 require("dotenv").config();
 require("./connection/connection").connect(); // now connection to local database mongodb //
+const Fs = require('fs')
+
+function createdDate (file) {  
+  const { birthtime } = Fs.statSync(file)
+
+  return birthtime
+}
 
 // lib //
 const express = require("express");
@@ -207,8 +214,9 @@ app.post("/backend/image/upload", upload.single("file"), async (req, res) => {
   const { filename, path, size } = req.file;
   const meterImage = require("./model/meterImage");
   const metadata = filename.slice(0, -4).split("_");
-  const setDateToString = new Date(metadata[2]);
-  const DateToString = setDateToString.toISOString().slice(0, 10);
+  const setDateToString = req.body.date;
+  const DateToString = setDateToString.slice(0, 10);
+  // const DateToString = setDateToString.toISOString();
 
   /*{
         fieldname: 'file',
@@ -228,7 +236,7 @@ app.post("/backend/image/upload", upload.single("file"), async (req, res) => {
         filename: filename,
         zoneId: metadata[0],
         meterId: metadata[1],
-        date: new Date(metadata[2]),
+        date: new Date(req.body.date),
         dateString: DateToString,
         size: formatBytes(size),
         image: response,
