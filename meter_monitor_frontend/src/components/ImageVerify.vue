@@ -125,7 +125,7 @@ export default {
 
         async findAllMeter(){
             try{
-                const allMeterData = await axios.get("http://localhost:3000/fetchAll");
+                const allMeterData = await axios.get("http://localhost/backend/fetchAll");
                 let setData = []
                 for(let i = 0; i < allMeterData.data.length;i++){
                     const settingData = {
@@ -167,13 +167,11 @@ export default {
                 const payload = {
                     dateIn: this.isDate
                 }
-                const gettingImgData = await axios.post("http://localhost:3000/fetchimg", payload);
-
-                // console.log(this.arrayMeter)
+                const gettingImgData = await axios.post("http://localhost/backend/fetchimg", payload);
+                console.log(this.arrayMeter)
                 let setMeterId = []
                 let setMeterZoneId = []
                 for(let i = 0; i < gettingImgData.data.listData.length;i++){
-                    // console.log(gettingImgData.data.listData[i])
                     const settingData = {
                                 _id: gettingImgData.data.listData[i]._id,
                                 dateString: gettingImgData.data.listData[i].dateString,
@@ -221,8 +219,8 @@ export default {
                     dateIn: this.isDate
                 }
 
-                const gettingImgData = await axios.post("http://localhost:3000/fetchimg", payload);
-                
+                const gettingImgData = await axios.post("http://localhost/backend/fetchimg", payload);
+                // console.log(gettingImgData.data)
                 if (gettingImgData.data.isError === false) {
                     this.isDateBase = gettingImgData.data.isDate
 
@@ -325,7 +323,7 @@ export default {
 
                 const isCheckAuth = await axios({
                     method: "GET",
-                    url: "http://localhost:3000/checkingauth",
+                    url: "http://localhost/backend/checkingauth",
                     headers: {
                         'Content-Type': 'application/json',
                         'access-token': this.$cookies.get("DamToken")
@@ -379,12 +377,6 @@ export default {
             const year = this.date.getFullYear();
 
             const dateNow = `${year}-${month}-${day}`;
-            // console.log("date selection: ",this.$store.isDateG)
-            
-            // if(!(this.isDate)){
-            //     this.isDate  this.$store.isDateG     
-            // }
-
             this.backupDate = this.date;
 
             if (dateNow !== this.$store.isDateG) {
@@ -573,7 +565,6 @@ export default {
                         </div>
                         <div class="set-meter-detail-container">
                             <div class="meter-detail"  v-for="(meterId, indexId) in arrayMeter" :key="indexId">
-                               
                                     <div class="card-meter" v-if="setMeter === meterId.meterId">
                                         <div class="card-img">
                                             <img height="150" width="150" :src="meterId.img" />
