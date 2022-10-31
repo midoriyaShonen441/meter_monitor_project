@@ -43,6 +43,7 @@ export default {
             backupListAllMeter:null,
             findMeterId: "",
             findZoneId:"",
+            backupDate:null,
             // setReloadCn: false,
         }
     },
@@ -168,11 +169,11 @@ export default {
                 }
                 const gettingImgData = await axios.post("http://localhost:3000/fetchimg", payload);
 
-                console.log(this.arrayMeter)
+                // console.log(this.arrayMeter)
                 let setMeterId = []
                 let setMeterZoneId = []
                 for(let i = 0; i < gettingImgData.data.listData.length;i++){
-                    console.log(gettingImgData.data.listData[i])
+                    // console.log(gettingImgData.data.listData[i])
                     const settingData = {
                                 _id: gettingImgData.data.listData[i]._id,
                                 dateString: gettingImgData.data.listData[i].dateString,
@@ -192,7 +193,8 @@ export default {
                 }   
                 this.meterZone = setMeterZoneId.filter(this.distinctMeterId)
                 this.uniqueMeter= setMeterId.filter(this.distinctMeterId)
-                console.log("zone",this.meterZone)
+                this.isLoading = false;
+                // console.log("zone",this.meterZone)
             }catch(err){
                 console.log(err)
             }
@@ -367,17 +369,51 @@ export default {
         // }
     },
     updated() {
-        const day = this.date.getDate();
-        const month = this.date.getMonth() + 1;
-        const year = this.date.getFullYear();
 
-        const dateNow = `${year}-${month}-${day}`;
+        // console.log("this.isDate==>",this.date)
 
-        if (dateNow !== this.$store.isDateG) {
-            // console.log("date change!")
-            this.isLoading = true;
-            this.fetchImageData();
+        if(this.date === null){
+            this.date = this.backupDate;
+            const day = this.date.getDate();
+            const month = this.date.getMonth() + 1;
+            const year = this.date.getFullYear();
+
+            const dateNow = `${year}-${month}-${day}`;
+            // console.log("date selection: ",this.$store.isDateG)
+            
+            // if(!(this.isDate)){
+            //     this.isDate  this.$store.isDateG     
+            // }
+
+            this.backupDate = this.date;
+
+            if (dateNow !== this.$store.isDateG) {
+                
+                // console.log("date change!")
+                this.isLoading = true;
+                this.fetchImageData();
+                this.fetchMeter();
+            }
+        }else{
+            this.backupDate = this.date;
+            const day = this.date.getDate();
+            const month = this.date.getMonth() + 1;
+            const year = this.date.getFullYear();
+
+            const dateNow = `${year}-${month}-${day}`;
+
+            if (dateNow !== this.$store.isDateG) {
+                
+                // console.log("date change!")
+                this.isLoading = true;
+                this.fetchImageData();
+                this.fetchMeter();
+            }
         }
+
+       
+
+    
 
         
         
@@ -398,6 +434,16 @@ export default {
         </div>
         <div class="verify-container">
             <div class="filter-container">
+                <div class="title-username">
+                    <h4>user: {{userId}}</h4>
+                </div>
+                <div class="userprofile-info">
+                    <div>
+                        <button class="btn-logout" @click="haddleLogout">Logout</button>
+                        <button class="btn-edit" @click="btnEditProfile">Edit</button>
+                    </div>
+                </div>
+                <br/>
                 <div class="set-search-type">
                     <div>
                         <button class="btn-find-switch" @click="btnChangeSerach('zone')">ค้นหาโดยโซน</button>
@@ -409,22 +455,10 @@ export default {
                         <button class="btn-find-switch" @click="btnChangeSerach('all')">ดูมิตเตอร์ทั้งหมด</button>
                     </div>
                 </div>
-                <div class="title-username">
-                    <h4>user: {{userId}}</h4>
-                </div>
-                <div class="userprofile-info">
-
-                    <div>
-                        <button class="btn-logout" @click="haddleLogout">Logout</button>
-                        <button class="btn-edit" @click="btnEditProfile">Edit</button>
-                    </div>
-                </div>
                 <br />
-
                 <div class="calendar-container">
                     <v-date-picker style="border-radius: 30px;" v-model="date" />
                 </div>
-
             </div>
             <div class="collection-container" v-if="findType === 'zone'">
                 
@@ -611,7 +645,7 @@ export default {
                             <th>ขนาดไฟล์</th>
                             <th>รายละเอียด</th>
                         </tr>
-                        <tr v-for="(data ,index) in listAllMeter" :key="index">
+                        <tr v-for="(data ,index) in listAllMeter" :key="index" @click="settingModal(data)">
                             <td> <img height="100" width="100" :src="data.img" /></td>
                             <td>{{data.meterId}}</td>
                             <td>{{data.zoneId}}</td>
@@ -623,6 +657,14 @@ export default {
                             <td>{{data.imgDesc}}</td>
                         </tr>
                     </table>
+                    <Teleport to="body">
+                        <modal :dataIn="{show: showModal, data:setObject, checking:isChecking}"
+                            @close="showModal = false">
+                            <template #header>
+                                <h3>Location Zone: {{setObject.zoneId}} with Meter id: {{setObject.meterId}}, </h3>
+                            </template>
+                        </modal>
+                    </Teleport>
                 </div>
             </div>
         </div>
