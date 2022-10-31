@@ -368,8 +368,6 @@ export default {
     },
     updated() {
 
-        // console.log("this.isDate==>",this.date)
-
         if(this.date === null){
             this.date = this.backupDate;
             const day = this.date.getDate();
