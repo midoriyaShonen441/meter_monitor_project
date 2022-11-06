@@ -1,4 +1,5 @@
 <script>
+// import axios
 import axios from 'axios'
 
 export default {
@@ -16,7 +17,7 @@ export default {
                     username: this.$cookies.get("userDam"),
                      isPassword: this.newPassword
                  }
-                const statusUpdate = await axios.put("http://localhost/backend/updateprofile",payload);
+                const statusUpdate = await axios.put(`${location.href}backend/updateprofile`,payload);
 
                 if(statusUpdate.data.isError === true){
 

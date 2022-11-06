@@ -43,7 +43,6 @@ export default {
             backupListAllMeter:null,
             findMeterId: "",
             findZoneId:"",
-            backupDate:null,
             // setReloadCn: false,
         }
     },
@@ -125,7 +124,7 @@ export default {
 
         async findAllMeter(){
             try{
-                const allMeterData = await axios.get("http://localhost/backend/fetchAll");
+                const allMeterData = await axios.get(`${location.href}backend/fetchAll`);
                 let setData = []
                 for(let i = 0; i < allMeterData.data.length;i++){
                     const settingData = {
@@ -167,11 +166,13 @@ export default {
                 const payload = {
                     dateIn: this.isDate
                 }
-                const gettingImgData = await axios.post("http://localhost/backend/fetchimg", payload);
+                const gettingImgData = await axios.post(`${location.href}backend/fetchimg`, payload);
+                // this.arrayMeter = gettingImgData.data.listData
                 console.log(this.arrayMeter)
                 let setMeterId = []
                 let setMeterZoneId = []
                 for(let i = 0; i < gettingImgData.data.listData.length;i++){
+                    console.log(gettingImgData.data.listData[i])
                     const settingData = {
                                 _id: gettingImgData.data.listData[i]._id,
                                 dateString: gettingImgData.data.listData[i].dateString,
@@ -191,8 +192,7 @@ export default {
                 }   
                 this.meterZone = setMeterZoneId.filter(this.distinctMeterId)
                 this.uniqueMeter= setMeterId.filter(this.distinctMeterId)
-                this.isLoading = false;
-                // console.log("zone",this.meterZone)
+                console.log("zone",this.meterZone)
             }catch(err){
                 console.log(err)
             }
@@ -219,7 +219,7 @@ export default {
                     dateIn: this.isDate
                 }
 
-                const gettingImgData = await axios.post("http://localhost/backend/fetchimg", payload);
+                const gettingImgData = await axios.post(`${location.href}backend/fetchimg`, payload);
                 // console.log(gettingImgData.data)
                 if (gettingImgData.data.isError === false) {
                     this.isDateBase = gettingImgData.data.isDate
@@ -323,7 +323,7 @@ export default {
 
                 const isCheckAuth = await axios({
                     method: "GET",
-                    url: "http://localhost/backend/checkingauth",
+                    url: `${location.href}backend/checkingauth`,
                     headers: {
                         'Content-Type': 'application/json',
                         'access-token': this.$cookies.get("DamToken")
@@ -367,43 +367,17 @@ export default {
         // }
     },
     updated() {
+        const day = this.date.getDate();
+        const month = this.date.getMonth() + 1;
+        const year = this.date.getFullYear();
 
-        if(this.date === null){
-            this.date = this.backupDate;
-            const day = this.date.getDate();
-            const month = this.date.getMonth() + 1;
-            const year = this.date.getFullYear();
+        const dateNow = `${year}-${month}-${day}`;
 
-            const dateNow = `${year}-${month}-${day}`;
-            this.backupDate = this.date;
-
-            if (dateNow !== this.$store.isDateG) {
-                
-                // console.log("date change!")
-                this.isLoading = true;
-                this.fetchImageData();
-                this.fetchMeter();
-            }
-        }else{
-            this.backupDate = this.date;
-            const day = this.date.getDate();
-            const month = this.date.getMonth() + 1;
-            const year = this.date.getFullYear();
-
-            const dateNow = `${year}-${month}-${day}`;
-
-            if (dateNow !== this.$store.isDateG) {
-                
-                // console.log("date change!")
-                this.isLoading = true;
-                this.fetchImageData();
-                this.fetchMeter();
-            }
+        if (dateNow !== this.$store.isDateG) {
+            // console.log("date change!")
+            this.isLoading = true;
+            this.fetchImageData();
         }
-
-       
-
-    
 
         
         
@@ -424,16 +398,6 @@ export default {
         </div>
         <div class="verify-container">
             <div class="filter-container">
-                <div class="title-username">
-                    <h4>user: {{userId}}</h4>
-                </div>
-                <div class="userprofile-info">
-                    <div>
-                        <button class="btn-logout" @click="haddleLogout">Logout</button>
-                        <button class="btn-edit" @click="btnEditProfile">Edit</button>
-                    </div>
-                </div>
-                <br/>
                 <div class="set-search-type">
                     <div>
                         <button class="btn-find-switch" @click="btnChangeSerach('zone')">ค้นหาโดยโซน</button>
@@ -445,10 +409,22 @@ export default {
                         <button class="btn-find-switch" @click="btnChangeSerach('all')">ดูมิตเตอร์ทั้งหมด</button>
                     </div>
                 </div>
+                <div class="title-username">
+                    <h4>user: {{userId}}</h4>
+                </div>
+                <div class="userprofile-info">
+
+                    <div>
+                        <button class="btn-logout" @click="haddleLogout">Logout</button>
+                        <button class="btn-edit" @click="btnEditProfile">Edit</button>
+                    </div>
+                </div>
                 <br />
+
                 <div class="calendar-container">
                     <v-date-picker style="border-radius: 30px;" v-model="date" />
                 </div>
+
             </div>
             <div class="collection-container" v-if="findType === 'zone'">
                 
@@ -563,6 +539,7 @@ export default {
                         </div>
                         <div class="set-meter-detail-container">
                             <div class="meter-detail"  v-for="(meterId, indexId) in arrayMeter" :key="indexId">
+                               
                                     <div class="card-meter" v-if="setMeter === meterId.meterId">
                                         <div class="card-img">
                                             <img height="150" width="150" :src="meterId.img" />
@@ -634,7 +611,7 @@ export default {
                             <th>ขนาดไฟล์</th>
                             <th>รายละเอียด</th>
                         </tr>
-                        <tr v-for="(data ,index) in listAllMeter" :key="index" @click="settingModal(data)">
+                        <tr v-for="(data ,index) in listAllMeter" :key="index">
                             <td> <img height="100" width="100" :src="data.img" /></td>
                             <td>{{data.meterId}}</td>
                             <td>{{data.zoneId}}</td>
@@ -646,14 +623,6 @@ export default {
                             <td>{{data.imgDesc}}</td>
                         </tr>
                     </table>
-                    <Teleport to="body">
-                        <modal :dataIn="{show: showModal, data:setObject, checking:isChecking}"
-                            @close="showModal = false">
-                            <template #header>
-                                <h3>Location Zone: {{setObject.zoneId}} with Meter id: {{setObject.meterId}}, </h3>
-                            </template>
-                        </modal>
-                    </Teleport>
                 </div>
             </div>
         </div>
