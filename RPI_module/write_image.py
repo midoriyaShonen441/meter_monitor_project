@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import os
 
 import pytz
 import datetime
@@ -7,9 +8,24 @@ import datetime
 TZ = pytz.timezone("Asia/Bangkok")
 
 
+def isolate_name(files_list): 
+    filename_list = [i[:-37] for i in files_list]
+    return filename_list
+
+def edit_date_format(date):
+    date_string = str(date)
+    date_string = date_string.split(" ")
+    js_isodate =  "_" + date_string[0] + "T" + date_string[1]
+    return js_isodate
+
 def image_capture(img_name, img):
+    files_list = os.listdir("./img")
+    filename_list = isolate_name(files_list)
+    if img_name in filename_list:
+        return
     date = datetime.datetime.now(TZ)
-    cv2.imwrite(img_name + date + ".png", img)
+    js_isodate = edit_date_format(date)
+    cv2.imwrite("./img/" + img_name + js_isodate + ".png", img)
     print("{} written!".format(img_name))
 
 
@@ -86,6 +102,7 @@ while True:
         centroid_x_array = []
         centroid_y_array = []
         if stabled and qr_value:
+            # print("image_name ===> {}".format(qr_value))
             image_capture(qr_value, img)
 
     if cv2.waitKey(1) == ord("q"):
