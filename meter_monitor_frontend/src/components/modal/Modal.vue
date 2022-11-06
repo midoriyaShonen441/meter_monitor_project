@@ -28,7 +28,7 @@ export default {
       }
 
       try{
-        const returnDataUpdate = await axios.put(`${location.href}backend/updateMachine`,payload);
+        const returnDataUpdate = await axios.put(`${location.origin}/backend/updateMachine`,payload);
         if(returnDataUpdate.data.isError === false){
           alert(returnDataUpdate.data.text);
         }else{
@@ -60,7 +60,7 @@ export default {
         }
 
         try{
-          const dataUpdate = await axios.put(`${location.href}backend/updateMachine`, payload);
+          const dataUpdate = await axios.put(`${location.origin}/backend/updateMachine`, payload);
           // console.log("dataUpdate ==> ",dataUpdate.data)
           if(dataUpdate.data.isError === false){
             alert(dataUpdate.data.text);
@@ -88,7 +88,7 @@ export default {
         }
 
         try{
-          const dataUpdate = await axios.put(`${location.href}backend/updateMachine`, payload);
+          const dataUpdate = await axios.put(`${location.origin}/backend/updateMachine`, payload);
           console.log("dataUpdate ==> ",dataUpdate.data)
           if(dataUpdate.data.isError === false){
             alert(dataUpdate.data.text);
@@ -115,7 +115,7 @@ export default {
         }
 
         try{
-          const dataUpdate = await axios.put(`${location.href}backend/updateMachine`, payload);
+          const dataUpdate = await axios.put(`${location.origin}/backend/updateMachine`, payload);
           console.log("dataUpdate ==> ",dataUpdate.data)
           if(dataUpdate.data.isError === false){
             alert(dataUpdate.data.text);
@@ -141,7 +141,7 @@ export default {
         }
 
         try{
-          const dataUpdate = await axios.put(`${location.href}backend/updateMachine`, payload);
+          const dataUpdate = await axios.put(`${location.origin}/backend/updateMachine`, payload);
           console.log("dataUpdate ==> ",dataUpdate.data)
           if(dataUpdate.data.isError === false){
             alert(dataUpdate.data.text);

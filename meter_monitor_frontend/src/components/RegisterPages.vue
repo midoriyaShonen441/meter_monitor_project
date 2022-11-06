@@ -20,7 +20,8 @@ export default {
                     password: this.isPassword
                 }
 
-                const isUserProfile = await axios.post(`${location.href}backend/haddlelogin`, payload);
+                const isUserProfile = await axios.post(`${location.origin}/backend/haddlelogin`, payload);
+                console.log("-----------")
                 console.log(isUserProfile.data.isError)
                 if (isUserProfile.data.isError === false) {
                     this.ErrorText = "";

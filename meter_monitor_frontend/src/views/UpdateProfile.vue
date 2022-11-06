@@ -17,7 +17,7 @@ export default {
                     username: this.$cookies.get("userDam"),
                      isPassword: this.newPassword
                  }
-                const statusUpdate = await axios.put(`${location.href}backend/updateprofile`,payload);
+                const statusUpdate = await axios.put(`${location.origin}backend/updateprofile`,payload);
 
                 if(statusUpdate.data.isError === true){
 

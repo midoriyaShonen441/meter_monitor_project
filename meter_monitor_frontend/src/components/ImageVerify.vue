@@ -124,7 +124,7 @@ export default {
 
         async findAllMeter(){
             try{
-                const allMeterData = await axios.get(`${location.href}backend/fetchAll`);
+                const allMeterData = await axios.get(`${location.origin}/backend/fetchAll`);
                 let setData = []
                 for(let i = 0; i < allMeterData.data.length;i++){
                     const settingData = {
@@ -166,7 +166,7 @@ export default {
                 const payload = {
                     dateIn: this.isDate
                 }
-                const gettingImgData = await axios.post(`${location.href}backend/fetchimg`, payload);
+                const gettingImgData = await axios.post(`${location.origin}/backend/fetchimg`, payload);
                 // this.arrayMeter = gettingImgData.data.listData
                 console.log(this.arrayMeter)
                 let setMeterId = []
@@ -219,7 +219,7 @@ export default {
                     dateIn: this.isDate
                 }
 
-                const gettingImgData = await axios.post(`${location.href}backend/fetchimg`, payload);
+                const gettingImgData = await axios.post(`${location.origin}/backend/fetchimg`, payload);
                 // console.log(gettingImgData.data)
                 if (gettingImgData.data.isError === false) {
                     this.isDateBase = gettingImgData.data.isDate
@@ -323,7 +323,7 @@ export default {
 
                 const isCheckAuth = await axios({
                     method: "GET",
-                    url: `${location.href}backend/checkingauth`,
+                    url: `${location.origin}/backend/checkingauth`,
                     headers: {
                         'Content-Type': 'application/json',
                         'access-token': this.$cookies.get("DamToken")
