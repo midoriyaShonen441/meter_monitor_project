@@ -23,5 +23,5 @@ build-backend = "pdm.pep517.api"
 [tool]
 [tool.pdm]
 [tool.pdm.scripts]
-start = "python index.py"
+upload = "python upload_image.py"
 camera = "python write_image.py"

@@ -23,8 +23,7 @@ class connection:
                 print(result)
 
 
-# server = connection("http://128.199.78.224")
-server = connection("http://localhost")
+server = connection("http://localhost") # edit url for hosting server end-point
 file_path = r"./img/"
 file_names = os.listdir(file_path)
 
